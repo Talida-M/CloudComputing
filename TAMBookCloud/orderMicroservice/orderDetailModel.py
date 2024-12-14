@@ -6,9 +6,9 @@ db = SQLAlchemy()
 
 class Order_Detail(db.Model):
     __tablename__= 'orderDetail'
-    idOrder = db.Column(db.Integer, primary_key=True)
-    idBook = db.Column(db.Integer,  db.ForeignKey('books.idBook'), primary_key=True)
-    book = db.relationship('Book', backref='orderDetail', lazy=True)
+    idOrder = db.Column(db.Integer,  db.ForeignKey('order.idOrder'), primary_key=True)
+    order = db.relationship('Order', backref='orderDetail', lazy=True)
+    idBook = db.Column(db.Integer,  primary_key=True)
     cantity =  db.Column(db.Integer, nullable = False)
     price = db.Column(db.Float, nullable=False)
     discount = db.Column(db.Integer, nullable=False)

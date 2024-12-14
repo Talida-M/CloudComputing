@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7994ac65-72a4-409f-a6b5-f184f72b3012" name="Changes" comment="added order and order_details">
+    <list default="true" id="7994ac65-72a4-409f-a6b5-f184f72b3012" name="Changes" comment="update to order and order_details">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderDetailModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderDetailModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderModel.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +21,10 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -33,19 +36,40 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="248b7d88-c791-4bfe-b180-0b76209e65f0" name="Changes" comment="" />
+      <changelist id="7994ac65-72a4-409f-a6b5-f184f72b3012" name="Changes" comment="update to order and order_details" />
       <created>1734165644500</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1734165644500</updated>
       <workItem from="1734165645786" duration="75000" />
     </task>
+    <task id="LOCAL-00001" summary="update to order and order_details">
+      <created>1734187865960</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1734187865960</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update to order and order_details" />
+    <option name="LAST_COMMIT_MESSAGE" value="update to order and order_details" />
   </component>
 </project>
