@@ -1,14 +1,15 @@
+from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.testing.suite.test_reflection import users
-from rabbitmq import connect_rabbitmq, send_message
-import uuid
-from wtforms.validators import email
-from flask import Flask, request, jsonify
+from sqlalchemy import Column
+from sqlalchemy.dialects.mysql import DATETIME
+
 db = SQLAlchemy()
 
 class Review(db.Model):
     __tablename__= 'reviews'
 
+    rev = Column(DATETIME,primary_key=True)
     reviewDate = db.Column(db.Date, primary_key = True)
     idUser = db.Column(db.Integer, primary_key = True)
     idBook =  db.Column(db.Integer, primary_key = True)
@@ -31,9 +32,21 @@ class Review(db.Model):
             'comment': self.comment
         }
 
+    # @classmethod
+    # def create_review(cls, reviewDate, idUser, idBook, rating, comment):
+    #     review = cls(reviewDate=reviewDate, idUser=idUser, idBook=idBook, rating=rating, comment=comment)
+    #     db.session.add(review)
+    #     db.session.commit()
+    #     return review
     @classmethod
-    def create_review(cls, reviewDate, idUser, idBook, rating, comment):
-        review = cls(reviewDate=reviewDate, idUser=idUser, idBook=idBook, rating=rating, comment=comment)
+    def create_review(cls, review_data):
+        review=Review(reviewDate= datetime.today().date(),
+        idUser= review_data['idUser'],
+        idBook= review_data['idBook'],
+        rating= review_data['rating'],
+        comment= review_data['comment']
+        )
+
         db.session.add(review)
         db.session.commit()
         return review
@@ -60,4 +73,5 @@ class Review(db.Model):
         if review:
             db.session.delete(review)
             db.session.commit()
-        return review
+            return {"message": f"Review has been successfully deleted."}, 200
+        return {"message": f"Failed to delete the review."}, 500

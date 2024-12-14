@@ -1,12 +1,14 @@
+from flask_restful.fields import Integer
 from flask_sqlalchemy import SQLAlchemy
 from rabbitmq import connect_rabbitmq, send_message
 import uuid
+
+from sqlalchemy import Column, Integer
 
 db = SQLAlchemy()
 
 class Book(db.Model):
     __tablename__= 'books'
-
     idBook = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(255), nullable=False)
     price =  db.Column(db.Float, nullable=False)

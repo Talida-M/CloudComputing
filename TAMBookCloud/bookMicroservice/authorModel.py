@@ -48,7 +48,6 @@ class Author(db.Model):
         lastName = author_data['lastName']
         firstName = author_data['firstName']
 
-        author = Author.query.filter_by(lastName=lastName,firstName=firstName).all()
         authors = Author.query.filter(
             or_(
                 Author.lastName == lastName,
