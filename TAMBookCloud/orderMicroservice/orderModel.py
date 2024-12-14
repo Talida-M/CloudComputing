@@ -7,8 +7,7 @@ db = SQLAlchemy()
 class Order(db.Model):
     __tablename__= 'order'
     idOrder = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer,  db.ForeignKey('user.idUser'), nullable=False)
-    user = db.relationship('User', backref='order', lazy=True)
+    idUser = db.Column(db.Integer,  nullable=False)
     totalPrice =  db.Column(db.Float, nullable = False)
     address = db.Column(db.String(255), nullable=False)
     status =  db.Column(db.String(100), nullable=False)
