@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="248b7d88-c791-4bfe-b180-0b76209e65f0" name="Changes" comment="" />
+    <list default="true" id="7994ac65-72a4-409f-a6b5-f184f72b3012" name="Changes" comment="added order and order_details">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderDetailModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderDetailModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/TAMBookCloud/orderMicroservice/orderModel.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,23 +14,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
   <component name="ProjectId" id="2qCTdOIDKG2bjM0Sd6HhBRtWRDm" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Books-Service",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
-  }
-}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -49,5 +44,8 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

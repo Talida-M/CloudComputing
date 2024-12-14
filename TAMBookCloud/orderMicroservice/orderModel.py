@@ -7,7 +7,8 @@ db = SQLAlchemy()
 class Order(db.Model):
     __tablename__= 'order'
     idOrder = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer, nullable=False)
+    idUser = db.Column(db.Integer,  db.ForeignKey('user.idUser'), nullable=False)
+    user = db.relationship('User', backref='order', lazy=True)
     totalPrice =  db.Column(db.Float, nullable = False)
     address = db.Column(db.String(255), nullable=False)
     status =  db.Column(db.String(100), nullable=False)
@@ -35,7 +36,8 @@ class Order(db.Model):
         order = cls( idOrder=uuid.uuid4(), idUser=idUser, totalPrice=totalPrice, address=address, status=status, date=date)
         db.session.add(order)
         db.session.commit()
-        return order
+        # return order
+        return 'Your order was successful created'
 
     @classmethod
     def get_order_for_user(cls, idUser):
@@ -53,7 +55,7 @@ class Order(db.Model):
     def update_order_status(cls, idOrder, status):
         order = cls.query.filter_by(idOrder=idOrder).first()
         if not order:
-            return None
+            return {"error": "Order not found", "status": 404}, 404
         if status is not None:
             order.status = status
         db.session.commit()
@@ -63,7 +65,7 @@ class Order(db.Model):
     def change_order_address(cls, idOrder, address):
         order = cls.query.filter_by(idOrder=idOrder).first()
         if not order:
-            return None
+            return {"error": "Order not found", "status": 404}, 404
         if address is not None:
             order.address = address
         db.session.commit()
