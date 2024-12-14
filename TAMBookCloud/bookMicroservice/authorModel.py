@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 from rabbitmq import connect_rabbitmq, send_message
 from sqlalchemy import or_
 import uuid
-import bcrypt
 
 db = SQLAlchemy()
 
@@ -82,7 +81,7 @@ class Author(db.Model):
             return {"error": f"Failed to delete author: {str(e)}", "status": 500}, 500
 
 
-def send_message_to_queue(book_data):
+def send_message_to_queue(author_data):
     channel = connect_rabbitmq()
-    send_message(channel, 'book_queue',book_data)
+    send_message(channel, 'author_queue',author_data)
     channel.close()

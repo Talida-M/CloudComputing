@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from rabbitmq import connect_rabbitmq, send_message
 import uuid
-import bcrypt
 
 db = SQLAlchemy()
 
