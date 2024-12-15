@@ -1,18 +1,12 @@
-import sys
-
-from ReviewMicroservices.forms import ReviewAddForm, ReviewViewForm, ReviewDeleteForm, ReviewUpdateForm
-
-sys.path.append('/app')
+from forms import ReviewAddForm, ReviewViewForm, ReviewDeleteForm, ReviewUpdateForm
 from flask import Flask, render_template, redirect, url_for
 from flask_restful import Api
 import os
+from resources import ReviewAPI, ReviewsAPI, DelReviewApi
+from reviewModel import db, Review
 
-
-from .resources import ReviewAPI, ReviewsAPI
-from .reviewModel import db, Review
-
-DB_HOST = os.getenv('DB_HOST', 'localhost')
-DB_USERNAME = os.getenv('DB_USERNAME', 'postgresTAM')
+DB_HOST = os.getenv('DB_HOST', 'postgres')
+DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
 DB_NAME = os.getenv('DB_NAME', 'db')
 
@@ -26,13 +20,17 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/review/add', methods=['GET', 'POST'])
 def add_review_route():
     form = ReviewAddForm()
     if form.validate_on_submit():
         review = {
-            'idUser': form.idUser.data,
-            'idBook': form.idBook.data,
+            'iduser': form.iduser.data,
+            'idbook': form.idbook.data,
             'rating': form.rating.data,
             'comment': form.comment.data,
         }
@@ -40,45 +38,49 @@ def add_review_route():
         return redirect(url_for('index'))
     return render_template('add_review.html', form=form)
 
-@app.route('/books/view', methods=['GET', 'POST'])
+@app.route('/review/view', methods=['GET', 'POST'])
 def view_review_route():
     form = ReviewViewForm()
     if form.validate_on_submit():
-        idBook = form.idBook.data
-        return redirect(f'/api/review/{idBook}')
+        idbook = form.idbook.data
+        return redirect(f'/api/review/{idbook}')
 
     return render_template('view_review.html', form=form)
 
-@app.route('/books/delete', methods=['DELETE'])
+@app.route('/review/delete', methods=['GET','POST'])
 def delete_review_route():
     form = ReviewDeleteForm()
     if form.validate_on_submit():
-        idUser = form.idUser.data
-        reviewDate = form.reviewDate.data
-        idBook = form.idBook.data
-        return redirect(f'/api/review/{idBook}/{reviewDate}/{idUser}')
+        iduser = form.iduser.data
+        reviewdate = form.reviewdate.data
+        idbook = form.idbook.data
 
-    return render_template('view_book.html', form=form)
+        reviewdate_str = reviewdate.strftime('%Y-%m-%d')
+        return redirect(f'/api/review/{idbook}/{reviewdate_str}/{iduser}')
 
-@app.route('/books/update', methods=['PUT'])
+    return render_template('delete_review.html', form=form)
+
+@app.route('/review/update', methods=['GET', 'POST'])
 def update_review_route():
     form = ReviewUpdateForm()
-    if form.validate_on_submit():
 
-        idUser = form.idUser.data
-        reviewDate = form.reviewDate.data
-        idBook = form.idBook.data
+    if form.validate_on_submit():
+        iduser = form.iduser.data
+        idbook = form.idbook.data
+        reviewdate = form.reviewdate.data
         comment = form.comment.data
         rating = form.rating.data
 
-        Review.update_review(reviewDate,idUser, idBook, rating, comment)
+        updated_review = Review.update_review(reviewdate, iduser, idbook, rating, comment)
 
-        return redirect(url_for('index'))
-    return render_template('add_book.html', form=form)
+        if updated_review:
+            return redirect(url_for('index')) #success
+        else:
+            return "Review not found for the specified book, user, and review date", 404
+    return render_template('update_review.html', form=form)
 
-
-
-api.add_resource(ReviewAPI, '/api/review/<int:idBook>','/api/review/<int:idBook>/<string:reviewDate>/<int:idUser>')
+api.add_resource(ReviewAPI, '/api/review/<int:idbook>')
+api.add_resource(DelReviewApi, '/api/review/<int:idbook>/<string:reviewdate>/<int:iduser>')
 api.add_resource(ReviewsAPI, '/api/reviews')
 
 

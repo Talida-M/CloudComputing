@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Review</title>
+</head>
+<body>
+    <h1>Add a New Review</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.iduser.label }}<br>
+            {{ form.iduser(size=5) }}<br>
+            {% for error in form.iduser.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.idbook.label }}<br>
+            {{ form.idbook(size=5) }}<br>
+            {% for error in form.idbook.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.rating.label }}<br>
+            {{ form.rating(size=5) }}<br>
+            {% for error in form.rating.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.comment.label }}<br>
+            {{ form.comment(size=32) }}<br>
+            {% for error in form.comment.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.submit() }}
+        </p>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>

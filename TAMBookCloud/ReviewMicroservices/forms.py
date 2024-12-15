@@ -6,26 +6,26 @@ from wtforms.validators import DataRequired
 
 
 class ReviewAddForm(FlaskForm):
-    idUser = IntegerField('idUser', validators=[DataRequired()])
-    idBook = IntegerField('idBook', validators=[DataRequired()])
+    iduser = IntegerField('iduser', validators=[DataRequired()])
+    idbook = IntegerField('idbook', validators=[DataRequired()])
     rating = IntegerField('rating', validators=[DataRequired()])
     comment = StringField('comment', validators=[DataRequired()])
     submit = SubmitField('Add Review')
 
 class ReviewViewForm(FlaskForm): #view by IdBook
-    idBook = IntegerField('idBook', validators=[DataRequired()])
+    idbook = IntegerField('idbook', validators=[DataRequired()])
     submit = SubmitField('View Review For Book')
 
 class ReviewDeleteForm(FlaskForm):
-    idUser = IntegerField('idUser', validators=[DataRequired()])
-    idBook = IntegerField('idBook', validators=[DataRequired()])
-    reviewDate = DateField('reviewDate', validators=[DataRequired()])
+    iduser = IntegerField('iduser', validators=[DataRequired()])
+    idbook = IntegerField('idbook', validators=[DataRequired()])
+    reviewdate = DateField('reviewdate', validators=[DataRequired()])
     submit = SubmitField('Delete Review For Book')
 
 class ReviewUpdateForm(FlaskForm):
-    idUser = IntegerField('idUser', validators=[DataRequired()])
-    idBook = IntegerField('idBook', validators=[DataRequired()])
-    reviewDate = DateField('reviewDate', validators=[DataRequired()])
+    iduser = IntegerField('iduser', validators=[DataRequired()])
+    idbook = IntegerField('idbook', validators=[DataRequired()])
+    reviewdate = DateField('reviewdate', validators=[DataRequired()])
     rating = IntegerField('rating', validators=[DataRequired()])
     comment = StringField('comment', validators=[DataRequired()])
     submit = SubmitField('Update Review')

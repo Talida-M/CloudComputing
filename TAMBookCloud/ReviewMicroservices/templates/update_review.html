@@ -1,0 +1,32 @@
+<form method="POST" action="{{ url_for('update_review_route') }}">
+    {{ form.hidden_tag() }}
+
+    <div>
+        <label for="iduser">User ID:</label>
+        {{ form.iduser() }}
+    </div>
+
+    <div>
+        <label for="idbook">Book ID:</label>
+        {{ form.idbook() }}
+    </div>
+
+    <div>
+        <label for="reviewdate">Review Date:</label>
+        {{ form.reviewdate() }}
+    </div>
+
+    <div>
+        <label for="rating">Rating:</label>
+        {{ form.rating() }}
+    </div>
+
+    <div>
+        <label for="comment">Comment:</label>
+        {{ form.comment() }}
+    </div>
+
+    <div>
+        <button type="submit">Update Review</button>
+    </div>
+</form>

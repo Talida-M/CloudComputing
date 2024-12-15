@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="UTF-8">
+	<title>View Reviews for book</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+  <body>
+	<h1>Select Book</h1>
+	<form method="POST">
+	  {{ form.hidden_tag() }}
+	  <div>
+		{{ form.idbook.label }}
+		{{ form.idbook() }}
+		<div id="dropdown" style="border: 1px solid #ccc; display: none; max-height: 200px; overflow-y: auto;"></div>
+		{{ form.submit() }}
+	  </div>
+	</form>
+	<a href="/">Back to Home</a>
+  </body>
+</html>
