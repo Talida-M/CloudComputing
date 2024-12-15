@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>BookShop</title>
+  </head>
+  <body>
+    <h1>BookShop TAM</h1>
+
+    <a href="/review/add">Add Review</a><br>
+    <a href="/review/update">Update Review</a><br>
+    <a href="/review/delete">Delete Review</a><br>
+    <a href="/review/view">View review for book</a><br>
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+	<ul>
+	  {% for category, message in messages %}
+	  <li class="{{ category }}">{{ message }}</li>
+	  {% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
+  </body>
+</html>

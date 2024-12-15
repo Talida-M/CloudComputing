@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Delete Review</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("form").submit(function (event) {
+          event.preventDefault();
+
+          var form = $(this);
+          var idbook = form.find('input[name="idbook"]').val();
+          var reviewdate = form.find('input[name="reviewdate"]').val();
+          var iduser = form.find('input[name="iduser"]').val();
+
+
+          $.ajax({
+            url: '/api/review/' + idbook + '/' + reviewdate + '/' + iduser,  // send url for delete
+            type: 'DELETE',
+            success: function (response) {
+              alert("Review deleted successfully!");
+              window.location.href = "/";
+            },
+            error: function (error) {
+              alert("Error deleting review.");
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Delete Review for Book</h1>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <div>
+        <label for="iduser">User ID:</label>
+        {{ form.iduser() }}
+      </div>
+
+      <div>
+        <label for="idbook">Book ID:</label>
+        {{ form.idbook() }}
+      </div>
+
+      <div>
+        <label for="reviewdate">Review Date:</label>
+        {{ form.reviewdate() }}
+      </div>
+
+      <div>
+        <button type="submit">Delete Review</button>
+      </div>
+    </form>
+    <a href="/">Back to Home</a>
+  </body>
+</html>
