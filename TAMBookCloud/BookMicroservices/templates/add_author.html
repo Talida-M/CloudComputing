@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Author</title>
+</head>
+<body>
+    <h1>Add a New Author</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.lastname.label }}<br>
+            {{ form.lastname(size=255) }}<br>
+            {% for error in form.lastname.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.firstname.label }}<br>
+            {{ form.firstname(size=255) }}<br>
+            {% for error in form.firstname.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.submit() }}
+        </p>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>
