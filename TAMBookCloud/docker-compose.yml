@@ -30,6 +30,23 @@ services:
     ports:
       - "5672:5672"
 
+  user-microservices:
+    build:
+      context: ./UserMicroservices
+      dockerfile: Dockerfile
+    container_name: tam-user-app
+    networks:
+      - my-network
+    ports:
+      - "5002:8000"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+    depends_on:
+      - postgres
+
   review-microservices:
     build:
       context: ./ReviewMicroservices

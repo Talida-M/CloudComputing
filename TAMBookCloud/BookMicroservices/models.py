@@ -90,7 +90,7 @@ class Book(db.Model):
         self.idbook = idbook
         self.name = name
         self.price = price
-        self.stockStatus = stockstatus
+        self.stockstatus = stockstatus
         self.year = year
         self.description = description
         self.publisher = publisher
@@ -161,10 +161,10 @@ class Book(db.Model):
 
 
     @classmethod
-    def update_book_stock(cls, idp, book_data):
+    def update_book_stock(cls, idbook, book_data):
 
         book = Book.query.filter_by(idbook=idbook).first()
-
+        stock = book_data['stock'] #ad Mi
         if book is None:
             return {"error": "Book not found", "status": 404}, 404
 

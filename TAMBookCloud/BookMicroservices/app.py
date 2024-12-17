@@ -67,7 +67,7 @@ def delete_author_route():
 
 api.add_resource(AuthorAPI, '/api/author/<string:lastname>/<string:firstname>')
 api.add_resource(AuthorsAPI, '/api/author/')
-api.add_resource(DelAuthorApi, '/api/author/<int:idauthor>')
+api.add_resource(DelAuthorApi, '/api/author/<string:idauthor>')
 
 ####################  BOOKS  ####################
 
@@ -87,7 +87,8 @@ def add_book_route():
 
         }
         Book.add_book(book)
-        return redirect(url_for('/api/book/{}'))
+        return redirect(url_for('index'))
+        # return redirect(url_for('/api/book/{}'))
     return render_template('add_book.html', form=form)
 
 @app.route('/book/view', methods=['GET', 'POST'])
@@ -133,8 +134,8 @@ def update_book_route():
 
 
 api.add_resource(BookAPI, '/api/book/')
-api.add_resource(DelBookApi, '/api/book/<int:idbook>')
-api.add_resource(UpdateBookApi, '/api/book/<int:idbook>/<string:stockstatus>')
+api.add_resource(DelBookApi, '/api/book/<string:idbook>')
+api.add_resource(UpdateBookApi, '/api/book/<string:idbook>/<string:stockstatus>')
 
 
 if __name__ == '__main__':

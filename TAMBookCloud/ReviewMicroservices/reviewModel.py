@@ -10,8 +10,8 @@ class Review(db.Model):
     __tablename__= 'reviews'
 
     reviewdate = db.Column(db.Date, nullable=False)
-    iduser = db.Column(db.Integer, nullable=False)
-    idbook =  db.Column(db.Integer, nullable=False)
+    iduser = db.Column(db.String, nullable=False)
+    idbook =  db.Column(db.String, nullable=False)
     rating =  db.Column(db.Integer, nullable=False)
     comment =  db.Column(db.String(255), nullable=False)
 

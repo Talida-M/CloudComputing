@@ -9,8 +9,8 @@ from reviewModel import Review
 
 parser = reqparse.RequestParser()
 parser.add_argument('reviewdate', required=True, help="date cannot be blank")
-parser.add_argument('iduser', required=True,type=int, help="User id cannot be blank")
-parser.add_argument('idbook', required=True, type=int,help="Book id cannot be blank")
+parser.add_argument('iduser', required=True, help="User id cannot be blank")
+parser.add_argument('idbook', required=True,help="Book id cannot be blank")
 parser.add_argument('rating', required=True,type=int,  help="Rating must be a number")
 parser.add_argument('comment', required=True, help="Comment cannot be blank")
 

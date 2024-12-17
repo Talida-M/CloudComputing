@@ -79,8 +79,8 @@ def update_review_route():
             return "Review not found for the specified book, user, and review date", 404
     return render_template('update_review.html', form=form)
 
-api.add_resource(ReviewAPI, '/api/review/<int:idbook>')
-api.add_resource(DelReviewApi, '/api/review/<int:idbook>/<string:reviewdate>/<int:iduser>')
+api.add_resource(ReviewAPI, '/api/review/<string:idbook>')
+api.add_resource(DelReviewApi, '/api/review/<string:idbook>/<string:reviewdate>/<string:iduser>')
 api.add_resource(ReviewsAPI, '/api/reviews')
 
 
