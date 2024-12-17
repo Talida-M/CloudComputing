@@ -13,7 +13,7 @@ db = SQLAlchemy()
 class Book(db.Model):
     __tablename__= 'books'
 
-    idbook = db.Column(db.uuid, primary_key = True)
+    idbook = db.Column(db.String, primary_key = True)
     name = db.Column(db.String(255), nullable=False)
     price =  db.Column(db.Float, nullable=False)
     stockstatus =  db.Column(db.Integer, nullable=False)
@@ -21,7 +21,7 @@ class Book(db.Model):
     description = db.Column(db.String(255), nullable=False)
     publisher = db.Column(db.String(255), nullable=False)
     category = db.Column(db.String(255), nullable=False)
-    idauthor = db.Column(db.uuid, db.ForeignKey('authors.idauthor'), nullable=False)  # Foreign Key
+    idauthor = db.Column(db.String, db.ForeignKey('authors.idauthor'), nullable=False)  # Foreign Key
 
     author = db.relationship('Author', backref='books', lazy=True)
 
