@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Delete Review</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("form").submit(function (event) {
+          event.preventDefault();
+
+          var form = $(this);
+          var idbook = form.find('input[name="idbook"]').val();
+
+
+          $.ajax({
+            url: '/api/book/' + idbook,  // send url for delete
+            type: 'DELETE',
+            success: function (response) {
+              alert("Book deleted successfully!");
+              window.location.href = "/";
+            },
+            error: function (error) {
+              alert("Error deleting review.");
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Delete Author</h1>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <div>
+        <label for="idbook">Book ID:</label>
+        {{ form.idbook() }}
+      </div>
+
+      <div>
+        <button type="submit">Delete Book</button>
+      </div>
+    </form>
+    <a href="/">Back to Home</a>
+  </body>
+</html>

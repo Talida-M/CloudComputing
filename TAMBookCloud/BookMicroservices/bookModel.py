@@ -1,36 +1,40 @@
 from flask_restful.fields import Integer
 from flask_sqlalchemy import SQLAlchemy
-from rabbitmq import connect_rabbitmq, send_message
+# from rabbitmq import connect_rabbitmq, send_message
 import uuid
 
-from sqlalchemy import Column, Integer
+from datetime import datetime
+
+from flask_sqlalchemy import SQLAlchemy
+
 
 db = SQLAlchemy()
 
 class Book(db.Model):
     __tablename__= 'books'
-    idBook = db.Column(db.Integer, primary_key = True)
+
+    idbook = db.Column(db.uuid, primary_key = True)
     name = db.Column(db.String(255), nullable=False)
     price =  db.Column(db.Float, nullable=False)
-    stockStatus =  db.Column(db.Integer, nullable=False)
+    stockstatus =  db.Column(db.Integer, nullable=False)
     year =  db.Column(db.String(4), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     publisher = db.Column(db.String(255), nullable=False)
     category = db.Column(db.String(255), nullable=False)
-    idAuthor = db.Column(db.Integer, db.ForeignKey('authors.idAuthor'), nullable=False)  # Foreign Key
+    idauthor = db.Column(db.uuid, db.ForeignKey('authors.idauthor'), nullable=False)  # Foreign Key
 
     author = db.relationship('Author', backref='books', lazy=True)
 
-    def __init__(self, idBook, name, price,stockStatus,year,description,publisher,category,idAuthor):
-        self.idBook = idBook
+    def __init__(self, idbook, name, price,stockstatus,year,description,publisher,category,idauthor):
+        self.idbook = idbook
         self.name = name
         self.price = price
-        self.stockStatus = stockStatus
+        self.stockStatus = stockstatus
         self.year = year
         self.description = description
         self.publisher = publisher
         self.category = category
-        self.idAuthor = idAuthor
+        self.idauthor = idauthor
 
 
     @classmethod
@@ -39,15 +43,15 @@ class Book(db.Model):
         return [book.to_dict() for book in books]
     def to_dict(self):
         return {
-            'idBook': self.idBook,
+            'idbook': self.idbook,
             'name':self.name,
             'price':self.price,
-            'stockStatus':self.stockStatus,
+            'stockstatus':self.stockstatus,
             'year':self.year,
             'description':self.description,
             'publisher':self.publisher,
             'category':self.category,
-            'authorName': f"{self.author.firstName} {self.author.lastName}" if self.author else None
+            'authorname': f"{self.author.firstname} {self.author.lastname}" if self.author else None
 
         }
 
@@ -64,7 +68,7 @@ class Book(db.Model):
     #     description="Fantasy novel.",
     #     publisher="Bloomsbury",
     #     category="Fantasy",
-    #     idAuthor=new_author.idAuthor  # Bind to the author's id
+    #     idauthor=new_author.idauthor  # Bind to the author's id
     # )
     # db.session.add(new_book)
     # db.session.commit()
@@ -72,19 +76,19 @@ class Book(db.Model):
     def add_book(cls, book_data):
 
         book = {
-            'idBook': uuid.uuid4(),
+            'idbook': uuid.uuid4(),
             'name': book_data['name'],
             'price': book_data['price'],
-            'stockStatus':book_data['stockStatus'],
+            'stockstatus':book_data['stockstatus'],
             'year':book_data['year'],
             'description':book_data['description'],
             'publisher':book_data['publisher'],
             'category':book_data['category'],
-            'idAuthor':book_data['idAuthor']
+            'idauthor':book_data['idauthor']
 
 
         }
-        send_message_to_queue(book)
+      #  send_message_to_queue(book)
 
         return 'Your book was successful registered'
 
@@ -101,10 +105,10 @@ class Book(db.Model):
 
     @classmethod
     def update_book_stock(cls, book_data):
-        idBook = book_data['idBook']
-        stock = book_data['stockStatus']
+        idbook = book_data['idbook']
+        stock = book_data['stockstatus']
 
-        book = Book.query.filter_by(idBook=idBook).first()
+        book = Book.query.filter_by(idbook=idbook).first()
 
         if book is None:
             return {"error": "Book not found", "status": 404}, 404
@@ -112,17 +116,16 @@ class Book(db.Model):
         try:
             book.stockStatus = stock
             db.session.commit()
-            return {"message": f"Book '{idBook}' stock has been updated to '{stock}'.", "status": 200}, 200
+            return {"message": f"Book '{idbook}' stock has been updated to '{stock}'.", "status": 200}, 200
         except Exception as e:
             db.session.rollback()
             return {"error": f"Failed to update book status: {str(e)}", "status": 500}, 500
 
     @classmethod
-    def delete_book_by_id(cls, book_data):
-        idBook = book_data['idBook']
+    def delete_book_by_id(cls, idbook):
 
         # Query the database
-        book = Book.query.filter_by(idBook=idBook).first()
+        book = Book.query.filter_by(idbook=idbook).first()
 
         if book is None:
             return {"error": "Book not found", "status": 404}, 404
@@ -130,13 +133,13 @@ class Book(db.Model):
         try:
             db.session.delete(book)
             db.session.commit()
-            return {"message": f"Book '{idBook}' has been successfully deleted.", "status": 200}, 200
+            return {"message": f"Book '{idbook}' has been successfully deleted.", "status": 200}, 200
         except Exception as e:
             db.session.rollback()
             return {"error": f"Failed to delete book: {str(e)}", "status": 500}, 500
 
-
-def send_message_to_queue(book_data):
-    channel = connect_rabbitmq()
-    send_message(channel, 'book_queue',book_data)
-    channel.close()
+#
+# def send_message_to_queue(book_data):
+#     channel = connect_rabbitmq()
+#     send_message(channel, 'book_queue',book_data)
+#     channel.close()

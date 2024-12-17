@@ -1,0 +1,18 @@
+docker pull postgres
+docker run --name postgresTAM --publish 5432:5432 -e POSTGRES_PASSWORD=my-secret-pw -d postgres //creare
+docker container exec -it postgresTAM psql -h localhost -U postgres -W //verificare daca s-a creat bine
+
+
+//create and run microservice
+
+docker-compose up --build // face si rabitmq si postgres http://localhost:5003/
+docker exec -it postgresTAM psql -h localhost -U postgres -d db
+\dt
+
+
+docker build -t reviewmicroservicetam ./ReviewMicroservices
+docker run -it --rm --name tam-review-app reviewmicroservicetam
+
+
+docker build -t bookmicroservicetam ./BookMicroservices
+docker run -it --rm --name tam-book-app bookmicroservicetam

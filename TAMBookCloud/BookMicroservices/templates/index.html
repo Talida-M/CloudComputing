@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>BookShop</title>
+  </head>
+  <body>
+    <h1>BookShop TAM</h1>
+
+    <h3>Author</h3>
+    <a href="/author/add">Add Author</a><br>
+    <a href="/author/delete">Delete Author</a><br>
+    <a href="/author/view">View Author</a><br>
+    <a href="/author/all">View all authors</a><br>
+
+    <h3>Book</h3>
+    <a href="/book/add">Add Book</a><br>
+    <a href="/book/delete">Delete Book</a><br>
+    <a href="/book/update">Update Book stock</a><br>
+    <a href="/book/view">View Book</a><br>
+    <a href="/author/all">View all books</a><br>
+
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+	<ul>
+	  {% for category, message in messages %}
+	  <li class="{{ category }}">{{ message }}</li>
+	  {% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
+  </body>
+</html>
