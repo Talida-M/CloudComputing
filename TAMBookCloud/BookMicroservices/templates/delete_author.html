@@ -1,47 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete Review</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        $("form").submit(function (event) {
-          event.preventDefault();
 
-          var form = $(this);
-          var idauthor = form.find('input[name="idauthor"]').val();
+    <style>
+        /* Global styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+            color: #333;
+        }
 
+        /* Form container */
+        form {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
 
-          $.ajax({
-            url: '/api/author/' + idauthor,  // send url for delete
-            type: 'DELETE',
-            success: function (response) {
-              alert("Author deleted successfully!");
-              window.location.href = "/";
-            },
-            error: function (error) {
-              alert("Error deleting author.");
-            }
-          });
-        });
-      });
-    </script>
-  </head>
-  <body>
-    <h1>Delete Author</h1>
+        h1 {
+            text-align: center;
+            color: #d9534f;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #c9302c;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #5a9ec9;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #4a8cb5;
+        }
+
+        /* Alert styling */
+        .alert {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+
+        .alert-error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+    </style>
+</head>
+<body>
     <form method="POST">
-      {{ form.hidden_tag() }}
+        <h1>Delete Author</h1>
+        {{ form.hidden_tag() }}
 
-      <div>
-        <label for="idauthor">User ID:</label>
-        {{ form.idauthor() }}
-      </div>
+        <div>
+            <label for="idauthor">Author ID:</label>
+            {{ form.idauthor(class="form-control") }}
+        </div>
 
-      <div>
-        <button type="submit">Delete Review</button>
-      </div>
+        <div>
+            <button type="submit">Delete Author</button>
+        </div>
+         <a href="/" class="back-link">Back to Home</a>
     </form>
-    <a href="/">Back to Home</a>
-  </body>
+
+</body>
 </html>

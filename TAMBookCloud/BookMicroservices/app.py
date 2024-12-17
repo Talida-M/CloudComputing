@@ -2,7 +2,7 @@ from forms import AuthorAddForm, AuthorViewForm, AuthorDeleteForm,AuthorViewAllF
 from flask import Flask, render_template, redirect, url_for
 from flask_restful import Api
 import os
-from resources import AuthorsAPI, DelAuthorApi, BookAPI,DelBookApi
+from resources import AuthorsAPI, DelAuthorApi, BookAPI,DelBookApi,AuthorAPI
 # from authorModel import db, Author
 # from bookModel import db, Book
 from models import db,Author,Book
@@ -35,19 +35,15 @@ def add_author_route():
             'firstname': form.firstname.data,
         }
         Author.add_author(author)
-        return redirect(url_for('index'))
+        return redirect(f'/api/review/{form.lastname.data}/{form.firstname.data}')
     return render_template('add_author.html', form=form)
 
 @app.route('/author/view', methods=['GET', 'POST'])
 def view_author_route():
     form = AuthorViewForm()
     if form.validate_on_submit():
-        author = {
-            'lastname': form.lastname.data,
-            'firstname': form.firstname.data,
-        }
-        Author.get_author_by_name(author)
-        return redirect(url_for('index'))
+        Author.get_author_by_name(form.lastname.data,form.firstname.data)
+        return redirect(f'/api/review/{form.lastname.data}/{form.firstname.data}')
     return render_template('view_author.html', form=form)
 
 
@@ -56,7 +52,7 @@ def view_all_author_route():
     form = AuthorViewAllForm()
     if form.validate_on_submit():
         Author.get_all_authors()
-        return redirect(url_for('index'))
+        return redirect(f'/api/author/')
     return render_template('all_author.html', form=form)
 
 @app.route('/author/delete', methods=['GET','POST'])
@@ -64,11 +60,12 @@ def delete_author_route():
     form = AuthorDeleteForm()
     if form.validate_on_submit():
         idauthor = form.idauthor.data
-        return redirect(f'/api/author/{idauthor}')
+        Author.delete_author_by_id(idauthor)
+        return redirect('all')
 
     return render_template('delete_author.html', form=form)
 
-
+api.add_resource(AuthorAPI, '/api/review/<string:lastname>/<string:firstname>')
 api.add_resource(AuthorsAPI, '/api/author/')
 api.add_resource(DelAuthorApi, '/api/author/<int:idauthor>')
 

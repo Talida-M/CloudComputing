@@ -29,15 +29,6 @@ class DelAuthorApi(Resource):#by id
 
 class AuthorsAPI(Resource):#by names
     def get(self):
-        args = parser.parse_args()
-        author = {
-            'firstname': args['firstname'],
-            'lastname': args['lastname'],
-        }
-        authors = Author.get_author_by_name( author)
-        return [author.to_dict() for author in authors], 200
-
-    def get(self):
         authors = Author.get_all_authors()
         return [author.to_dict() for author in authors], 200
 
@@ -49,6 +40,11 @@ class AuthorsAPI(Resource):#by names
         }
         author_done = Author.add_author(author)
         return {'authorid':author_done['idauthor']}, 201
+
+class AuthorAPI(Resource):#by names
+    def get(self,lastname,firstname):
+        authors = Author.get_author_by_name( lastname,firstname)
+        return [author.to_dict() for author in authors], 200
 
 
 class BookAPI(Resource):#by names
