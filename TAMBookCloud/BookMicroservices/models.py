@@ -135,23 +135,19 @@ class Book(db.Model):
     # db.session.commit()
     @classmethod
     def add_book(cls, book_data):
+        book = Book(idbook=uuid.uuid4(),
+            name= book_data['name'],
+            price= book_data['price'],
+            stockstatus=book_data['stockstatus'],
+            year=book_data['year'],
+            description=book_data['description'],
+            publisher=book_data['publisher'],
+            category=book_data['category'],
+            idauthor=book_data['idauthor'])
 
-        book = {
-            'idbook': uuid.uuid4(),
-            'name': book_data['name'],
-            'price': book_data['price'],
-            'stockstatus':book_data['stockstatus'],
-            'year':book_data['year'],
-            'description':book_data['description'],
-            'publisher':book_data['publisher'],
-            'category':book_data['category'],
-            'idauthor':book_data['idauthor']
+        db.session.add(book)
+        db.session.commit()
 
-
-        }
-      #  send_message_to_queue(book)
-
-        return 'Your book was successful registered'
 
     @classmethod
     def get_book_by_name(cls, book_data):
@@ -165,9 +161,7 @@ class Book(db.Model):
 
 
     @classmethod
-    def update_book_stock(cls, book_data):
-        idbook = book_data['idbook']
-        stock = book_data['stockstatus']
+    def update_book_stock(cls, idp, book_data):
 
         book = Book.query.filter_by(idbook=idbook).first()
 

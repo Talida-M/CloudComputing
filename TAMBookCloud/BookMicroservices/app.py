@@ -2,7 +2,7 @@ from forms import AuthorAddForm, AuthorViewForm, AuthorDeleteForm,AuthorViewAllF
 from flask import Flask, render_template, redirect, url_for
 from flask_restful import Api
 import os
-from resources import AuthorsAPI, DelAuthorApi, BookAPI,DelBookApi,AuthorAPI
+from resources import AuthorsAPI, DelAuthorApi, BookAPI,DelBookApi,AuthorAPI,UpdateBookApi
 # from authorModel import db, Author
 # from bookModel import db, Book
 from models import db,Author,Book
@@ -35,7 +35,7 @@ def add_author_route():
             'firstname': form.firstname.data,
         }
         Author.add_author(author)
-        return redirect(f'/api/review/{form.lastname.data}/{form.firstname.data}')
+        return redirect(f'/api/author/{form.lastname.data}/{form.firstname.data}')
     return render_template('add_author.html', form=form)
 
 @app.route('/author/view', methods=['GET', 'POST'])
@@ -43,7 +43,7 @@ def view_author_route():
     form = AuthorViewForm()
     if form.validate_on_submit():
         Author.get_author_by_name(form.lastname.data,form.firstname.data)
-        return redirect(f'/api/review/{form.lastname.data}/{form.firstname.data}')
+        return redirect(f'/api/author/{form.lastname.data}/{form.firstname.data}')
     return render_template('view_author.html', form=form)
 
 
@@ -65,7 +65,7 @@ def delete_author_route():
 
     return render_template('delete_author.html', form=form)
 
-api.add_resource(AuthorAPI, '/api/review/<string:lastname>/<string:firstname>')
+api.add_resource(AuthorAPI, '/api/author/<string:lastname>/<string:firstname>')
 api.add_resource(AuthorsAPI, '/api/author/')
 api.add_resource(DelAuthorApi, '/api/author/<int:idauthor>')
 
@@ -87,7 +87,7 @@ def add_book_route():
 
         }
         Book.add_book(book)
-        return redirect(url_for('index'))
+        return redirect(url_for('/api/book/{}'))
     return render_template('add_book.html', form=form)
 
 @app.route('/book/view', methods=['GET', 'POST'])
@@ -98,7 +98,7 @@ def view_book_route():
             'name': form.name.data,
         }
         Book.get_book_by_name(book)
-        return redirect(url_for('index'))
+        return redirect(f'/api/book/{form.name.data}')
     return render_template('view_book.html', form=form)
 
 
@@ -107,7 +107,7 @@ def view_all_books_route():
     form = BookViewAllForm()
     if form.validate_on_submit():
         Book.get_all_books()
-        return redirect(url_for('index'))
+        return redirect(f'/api/book/')
     return render_template('all_books.html', form=form)
 
 @app.route('/book/delete', methods=['GET','POST'])
@@ -115,13 +115,26 @@ def delete_book_route():
     form = BookDeleteForm()
     if form.validate_on_submit():
         idbook = form.idbook.data
-        return redirect(f'/api/book/{idbook}')
+        Book.delete_book_by_id(idbook)
+        return redirect('all')
 
     return render_template('delete_book.html', form=form)
+
+@app.route('/book/update', methods=['GET','POST'])
+def update_book_route():
+    form = BookDeleteForm()
+    if form.validate_on_submit():
+        idbook = form.idbook.data
+        stockstatus = form.stockstatus.data
+        Book.update_book_stock(idbook,stockstatus)
+        return redirect('all')
+
+    return render_template('update_book.html', form=form)
 
 
 api.add_resource(BookAPI, '/api/book/')
 api.add_resource(DelBookApi, '/api/book/<int:idbook>')
+api.add_resource(UpdateBookApi, '/api/book/<int:idbook>/<string:stockstatus>')
 
 
 if __name__ == '__main__':

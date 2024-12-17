@@ -93,14 +93,14 @@
     </style>
 </head>
 <body>
-<form method="POST" action="{{ url_for('update_review_route') }}">
+<form method="POST">
         <h1>View Book</h1>
         {{ form.hidden_tag() }}
         <div>
             <label for="idbook">{{ form.idbook.label }}</label>
             {{ form.idbook(class="form-control") }}
 
-             <label for="stockstatus">{{ form.stockstatus.label }}</label>
+            <label for="stockstatus">{{ form.stockstatus.label }}</label>
             {{ form.stockstatus(class="form-control") }}
 
 

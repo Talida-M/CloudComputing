@@ -60,14 +60,7 @@ class BookAPI(Resource):#by names
         books = Book.get_all_books()
         return [book.to_dict() for book in books], 200
 
-    def update(self):
-        args = parser.parse_args()
-        book = {
-            'idbook': args['idbook'],
-            'stockstatus': args['stockstatus'],
-        }
-        review = Book.update_book_stock(book)
-        return review, 200
+
 
     def post(self):
         args = parser.parse_args()
@@ -88,3 +81,8 @@ class DelBookApi(Resource):  # by id
     def delete(self, idbook):
         message = Book.delete_book_by_id(idbook)
         return message, 200
+
+class UpdateBookApi(Resource):  # by id
+    def update(self, idbook, stockstatus):
+        review = Book.update_book_stock(idbook, stockstatus)
+        return review, 200
