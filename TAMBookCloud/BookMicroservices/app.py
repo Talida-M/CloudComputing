@@ -3,8 +3,9 @@ from flask import Flask, render_template, redirect, url_for
 from flask_restful import Api
 import os
 from resources import AuthorsAPI, DelAuthorApi, BookAPI,DelBookApi
-from authorModel import db, Author
-from bookModel import db, Book
+# from authorModel import db, Author
+# from bookModel import db, Book
+from models import db,Author,Book
 
 DB_HOST = os.getenv('DB_HOST', 'postgres')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')

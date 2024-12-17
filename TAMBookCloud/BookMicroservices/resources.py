@@ -3,9 +3,9 @@ from datetime import datetime
 from flask_restful import Resource, reqparse
 import os
 
-
-from authorModel import Author
-from bookModel import Book
+from models import Author,Book
+# from authorModel import Author
+# from bookModel import Book
 
 parser = reqparse.RequestParser()
 parser.add_argument('firstname', required=False, help="Author name")
