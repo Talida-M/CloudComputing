@@ -16,3 +16,30 @@ This application is designed to streamline the operations of an online bookstore
 6.	Analytics Service – Prometheus
 7.	Notification Service
 
+
+### Dev commands
+
+ * **Create microservice**: ```
+ *  name-microservices:
+    build:
+      context: ./NameMicroservices
+      dockerfile: Dockerfile
+    container_name: tam-book-app
+    networks:
+      - my-network
+    ports:
+      - "5004:8000"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+#      REDIS_HOST: redis
+#      REDIS_DATABASE: "0"
+      #RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - postgres
+#      - redis
+     # - rabbitmq```
+
+* **Start microservice**:  ``` docker-compose up --build ```
