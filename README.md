@@ -19,8 +19,9 @@ This application is designed to streamline the operations of an online bookstore
 
 ### Dev commands
 
- * **Create microservice**: ```
- *  name-microservices:
+ * **Create microservice**:
+    ```
+    name-microservices:
     build:
       context: ./NameMicroservices
       dockerfile: Dockerfile
@@ -33,13 +34,6 @@ This application is designed to streamline the operations of an online bookstore
       DB_HOST: postgres
       DB_NAME: db
       DB_USERNAME: postgres
-      DB_PASSWORD: my-secret-pw
-#      REDIS_HOST: redis
-#      REDIS_DATABASE: "0"
-      #RABBITMQ_HOST: rabbitmq
-    depends_on:
-      - postgres
-#      - redis
-     # - rabbitmq```
+      DB_PASSWORD: my-secret-pw```
 
 * **Start microservice**:  ``` docker-compose up --build ```
