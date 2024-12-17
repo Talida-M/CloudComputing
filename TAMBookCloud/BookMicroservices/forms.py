@@ -36,7 +36,7 @@ class BookAddForm(FlaskForm):
     submit = SubmitField('Add Book')
 
 class BookViewForm(FlaskForm): #view by IdBook
-    name = IntegerField('name', validators=[DataRequired()])
+    name = StringField('name', validators=[DataRequired()])
     submit = SubmitField('View Book')
 
 class BookViewAllForm(FlaskForm):

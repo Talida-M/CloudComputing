@@ -20,7 +20,7 @@ class Author(db.Model):
     @classmethod
     def get_all_authors(cls):
         authors = cls.query.all()
-        return [author.to_dict() for author in authors]
+        return [author for author in authors]
     def to_dict(self):
         return {
             'idauthor':self.idauthor,
@@ -40,16 +40,12 @@ class Author(db.Model):
         return author
 
     @classmethod
-    def get_author_by_name(cls, author_data):
-        lastname = author_data['lastname']
-        firstname = author_data['firstname']
+    def get_author_by_name(cls, lastname, firstname):
 
         authors = Author.query.filter(
             or_(
-                Author.lastname == lastname,
-                Author.lastname == firstname,
-                Author.firstname == lastname,
-                Author.firstname == firstname
+                Author.lastname == lastname and Author.firstname == firstname,
+                Author.lastname == firstname and Author.firstname == lastname,
             )
         ).all()
 

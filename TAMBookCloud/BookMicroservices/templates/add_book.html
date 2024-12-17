@@ -2,81 +2,172 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Book</title>
+    <style>
+        /* Global styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        /* Form container */
+        form {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: #5a9ec9;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        button,
+        input[type="submit"] {
+            background-color: #5a9ec9;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover,
+        input[type="submit"]:hover {
+            background-color: #4a8cb5;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #5a9ec9;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #4a8cb5;
+        }
+    </style>
 </head>
 <body>
-    <h1>Add a New Book</h1>
     <form method="POST">
+        <h1>Add a New Book</h1>
         {{ form.hidden_tag() }}
 
-        <p>
-            {{ form.name.label }}<br>
-            {{ form.name(size=255) }}<br>
+        <div>
+            <label for="name">{{ form.name.label }}</label>
+            {{ form.name(size=255, class="form-control") }}
             {% for error in form.name.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.price.label }}<br>
-            {{ form.price(step="any") }}<br>
+        <div>
+            <label for="price">{{ form.price.label }}</label>
+            {{ form.price(step="any", class="form-control") }}
             {% for error in form.price.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.stockstatus.label }}<br>
-            {{ form.stockstatus() }}<br>
+        <div>
+            <label for="stockstatus">{{ form.stockstatus.label }}</label>
+            {{ form.stockstatus(class="form-control") }}
             {% for error in form.stockstatus.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.year.label }}<br>
-            {{ form.year(size=4) }}<br>
+        <div>
+            <label for="year">{{ form.year.label }}</label>
+            {{ form.year(size=4, class="form-control") }}
             {% for error in form.year.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.description.label }}<br>
-            {{ form.description(size=255) }}<br>
+        <div>
+            <label for="description">{{ form.description.label }}</label>
+            {{ form.description(size=255, class="form-control") }}
             {% for error in form.description.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.publisher.label }}<br>
-            {{ form.publisher(size=255) }}<br>
+        <div>
+            <label for="publisher">{{ form.publisher.label }}</label>
+            {{ form.publisher(size=255, class="form-control") }}
             {% for error in form.publisher.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.category.label }}<br>
-            {{ form.category(size=255) }}<br>
+        <div>
+            <label for="category">{{ form.category.label }}</label>
+            {{ form.category(size=255, class="form-control") }}
             {% for error in form.category.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.idauthor.label }}<br>
-            {{ form.idauthor() }}<br>
+        <div>
+            <label for="idauthor">{{ form.idauthor.label }}</label>
+            {{ form.idauthor(class="form-control") }}
             {% for error in form.idauthor.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.submit() }}
-        </p>
+        <div>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    <a href="/" class="back-link">Back to Home</a>
     </form>
-    <a href="/">Back to Home</a>
+
 </body>
 </html>
