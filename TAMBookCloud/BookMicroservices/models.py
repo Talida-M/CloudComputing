@@ -101,7 +101,7 @@ class Book(db.Model):
     @classmethod
     def get_all_books(cls):
         books = cls.query.all()
-        return [book.to_dict() for book in books]
+        return [book for book in books]
     def to_dict(self):
         return {
             'idbook': self.idbook,
@@ -150,9 +150,7 @@ class Book(db.Model):
 
 
     @classmethod
-    def get_book_by_name(cls, book_data):
-        name = book_data['name']
-
+    def get_book_by_name(cls, name):
         books = Book.query.filter_by(name=name).all()
         if books is not None:
             return books
@@ -161,20 +159,16 @@ class Book(db.Model):
 
 
     @classmethod
-    def update_book_stock(cls, idbook, book_data):
-
+    def update_book_stock(cls, idbook, stockstatus):
         book = Book.query.filter_by(idbook=idbook).first()
-        stock = book_data['stock'] #ad Mi
-        if book is None:
-            return {"error": "Book not found", "status": 404}, 404
+        if not book:
+            return None
+        if stockstatus is not None:
+            book.stockstatus = stockstatus
 
-        try:
-            book.stockStatus = stock
-            db.session.commit()
-            return {"message": f"Book '{idbook}' stock has been updated to '{stock}'.", "status": 200}, 200
-        except Exception as e:
-            db.session.rollback()
-            return {"error": f"Failed to update book status: {str(e)}", "status": 500}, 500
+        db.session.commit()
+        return book
+
 
     @classmethod
     def delete_book_by_id(cls, idbook):

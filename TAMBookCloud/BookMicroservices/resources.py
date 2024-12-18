@@ -46,21 +46,20 @@ class AuthorAPI(Resource):#by names
         authors = Author.get_author_by_name( lastname,firstname)
         return [author.to_dict() for author in authors], 200
 
-
 class BookAPI(Resource):#by names
-    def get(self):
-        args = parser.parse_args()
-        book = {
-            'name': args['name'],
-        }
-        books = Book.get_book_by_name(book)
+    def get(self,name):
+        books = Book.get_book_by_name(name)
         return [book.to_dict() for book in books], 200
 
+
+class BooksAPI(Resource):
     def get(self):
         books = Book.get_all_books()
         return [book.to_dict() for book in books], 200
 
-
+    def update(self, idbook, stockstatus):
+        review = Book.update_book_stock(idbook, stockstatus)
+        return review, 200
 
     def post(self):
         args = parser.parse_args()
@@ -81,8 +80,3 @@ class DelBookApi(Resource):  # by id
     def delete(self, idbook):
         message = Book.delete_book_by_id(idbook)
         return message, 200
-
-class UpdateBookApi(Resource):  # by id
-    def update(self, idbook, stockstatus):
-        review = Book.update_book_stock(idbook, stockstatus)
-        return review, 200

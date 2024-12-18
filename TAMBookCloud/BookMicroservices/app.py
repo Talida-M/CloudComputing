@@ -2,7 +2,7 @@ from forms import AuthorAddForm, AuthorViewForm, AuthorDeleteForm,AuthorViewAllF
 from flask import Flask, render_template, redirect, url_for
 from flask_restful import Api
 import os
-from resources import AuthorsAPI, DelAuthorApi, BookAPI,DelBookApi,AuthorAPI,UpdateBookApi
+from resources import AuthorsAPI, DelAuthorApi, BookAPI,DelBookApi,AuthorAPI,BooksAPI
 # from authorModel import db, Author
 # from bookModel import db, Book
 from models import db,Author,Book
@@ -95,10 +95,7 @@ def add_book_route():
 def view_book_route():
     form = BookViewForm()
     if form.validate_on_submit():
-        book = {
-            'name': form.name.data,
-        }
-        Book.get_book_by_name(book)
+        Book.get_book_by_name(form.name.data)
         return redirect(f'/api/book/{form.name.data}')
     return render_template('view_book.html', form=form)
 
@@ -123,7 +120,7 @@ def delete_book_route():
 
 @app.route('/book/update', methods=['GET','POST'])
 def update_book_route():
-    form = BookDeleteForm()
+    form = BookUpdateForm()
     if form.validate_on_submit():
         idbook = form.idbook.data
         stockstatus = form.stockstatus.data
@@ -132,10 +129,10 @@ def update_book_route():
 
     return render_template('update_book.html', form=form)
 
-
-api.add_resource(BookAPI, '/api/book/')
+api.add_resource(BooksAPI, '/api/book/')
+api.add_resource(BookAPI, '/api/book/<string:name>')
 api.add_resource(DelBookApi, '/api/book/<string:idbook>')
-api.add_resource(UpdateBookApi, '/api/book/<string:idbook>/<string:stockstatus>')
+# api.add_resource(UpdateBookApi, '/api/book/<string:idbook>/<string:stockstatus>')
 
 
 if __name__ == '__main__':
