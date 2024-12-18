@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Order Quantity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h3>Update Order Quantity</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.idorder.label(class="form-label") }}
+                        {{ form.idorder(class="form-control", placeholder="Enter Order ID") }}
+                        {% for error in form.idorder.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.idbook.label(class="form-label") }}
+                        {{ form.idbook(class="form-control", placeholder="Enter Book ID") }}
+                        {% for error in form.idbook.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.cantity.label(class="form-label") }}
+                        {{ form.cantity(class="form-control", placeholder="Enter Quantity") }}
+                        {% for error in form.cantity.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {{ form.submit(class="btn btn-primary w-100") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+</body>
+</html>

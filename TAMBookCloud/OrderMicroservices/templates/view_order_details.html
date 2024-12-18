@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Order Details</title>
+</head>
+<body>
+    <h1>View Order Details</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.idorder.label }}<br>
+            {{ form.idorder(size=32) }}<br>
+            {% for error in form.idorder.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>

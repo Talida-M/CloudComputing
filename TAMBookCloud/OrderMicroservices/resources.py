@@ -21,7 +21,7 @@ order_parser.add_argument('books', required=True, type=list, location='json',
                           help="Books list is required")  # Expect a list of books
 
 class OrderDetailAPI(Resource):
-    def get_params(self, idorder, idbook):
+    def get_book(self, idorder, idbook):
         order = Order_Detail.get_book_order(idbook, idorder)
 
         if not order:
@@ -29,7 +29,7 @@ class OrderDetailAPI(Resource):
 
         return {"data": [order.to_dict()]}, 200
 
-    def get_param(self, idorder):
+    def get_books(self, idorder):
         orders = Order_Detail.get_books_order(idorder)
 
         if not orders:
@@ -38,18 +38,69 @@ class OrderDetailAPI(Resource):
         result = [order.to_dict() for order in orders]
         return {"data": result}, 200
 
+    def get_order(self, idorder):
+        orders = Order.get_order(idorder)
+
+        if not orders:
+            return {"error": "No orders found.", "status": 404}, 404
+
+        result = [order.to_dict() for order in orders]
+        return {"data": result}, 200
+
+
+class OrderAPI(Resource):
+    def get_orderby(self, iduser):
+        order = Order.get_order_for_user(iduser)
+
+        if not order:
+            return {"error": "Order not found.", "status": 404}, 404
+
+        return {"data": [order.to_dict()]}, 200
+
+    def get_orderbydate(self, iduser, date ):
+        orders = Order.get_user_order_by_date(iduser, date)
+
+        if not orders:
+            return {"error": "No orders found.", "status": 404}, 404
+
+        result = [order.to_dict() for order in orders]
+        return {"data": result}, 200
+
+
 class UpdateOrdersDetailsApi(Resource):
     def update(self):
         args = parser.parse_args()
         idorder = args['idorder']
         idbook = args['idbook']
         cantity = args.get('cantity')
-        if cantity is not None:
-            response = Order_Detail.update_order_cantity(idorder, idbook, cantity)
+        orderD = Order_Detail.get_book_order(idbook, idorder)
+        if not orderD:
+            return {"error": "Order not found.", "status": 404}, 404
+        else:
+            if cantity is not None:
+                totalPrice = cantity * orderD['price']
+                Order.change_order_price(idorder, totalPrice)
+                response = Order_Detail.update_order_cantity(idorder, idbook, cantity)
+            else:
+                return {"error": "No update parameters provided.", "status": 400}, 400
+
+            return {"message": "Order updated successfully.", "data": response.to_dict()}, 200
+
+class UpdateOrderApi(Resource):
+    def update(self):
+        args = parser.parse_args()
+        idorder = args['idorder']
+        address = args['address']
+        price = args['price']
+        if address is not None:
+            response = Order.change_order_address(idorder, address)
+        elif price is not None:
+            response = Order.change_order_price(idorder, price)
         else:
             return {"error": "No update parameters provided.", "status": 400}, 400
 
         return {"message": "Order updated successfully.", "data": response.to_dict()}, 200
+
 
 class OrdersAPI(Resource):
 
@@ -94,13 +145,3 @@ class OrdersAPI(Resource):
                    "order": updated_order.to_dict(),
                    "order_details": created_order_details
                }, 201
-        # args = parser.parse_args()
-        # order = {
-        #     'idorder': args['idorder'],
-        #     'idbook': args['idbook'],
-        #     'cantity': args['cantity'],
-        #     'price': args['price'],
-        #     'discount': args['discount']
-        # }
-        # basket_done = Order_Detail.create_order_details(order)
-        # return {'Order':basket_done['idorder']}, 201

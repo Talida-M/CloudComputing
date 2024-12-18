@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View User Orders by Date</title>
+</head>
+<body>
+    <h1>View User Orders by Date</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.iduser.label }}<br>
+            {{ form.iduser(size=32) }}<br>
+            {% for error in form.iduser.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.date.label }}<br>
+            {{ form.date() }}<br>
+            {% for error in form.date.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</body>
+</html>

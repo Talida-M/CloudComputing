@@ -1,9 +1,10 @@
-# from forms import ReviewAddForm, ReviewViewForm, ReviewDeleteForm, ReviewUpdateForm
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, flash
 from flask_restful import Api
 import os
-from resources import OrderDetailAPI, OrdersDetailsAPI, UpdateOrdersDetailsApi
+from forms import OrderAddForm, UserOrdersViewForm, OrderViewForm, UserOrderDetailsViewForm, UserOrdersByDateViewForm, \
+    OrdeQuantityUpdateForm
 from orderDetailModel import db, Order_Detail
+from resources import OrderAPI, OrderDetailAPI, UpdateOrdersDetailsApi
 
 DB_HOST = os.getenv('DB_HOST', 'postgres')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
@@ -24,65 +25,77 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
-@app.route('/orderDetails/add', methods=['GET', 'POST'])
-def add_orderDetails_route():
-    form = ReviewAddForm()
+@app.route('/create-order', methods=['GET', 'POST'])
+def create_order():
+    form = OrderAddForm()
+
     if form.validate_on_submit():
-        review = {
-            'iduser': form.iduser.data,
-            'idbook': form.idbook.data,
-            'rating': form.rating.data,
-            'comment': form.comment.data,
+
+        data = {
+            "iduser": form.iduser.data,
+            "address": form.address.data,
+            "books": [
+                {"idbook": book.idbook.data, "cantity": book.cantity.data, "price": book.price.data}
+                for book in form.books.entries
+            ]
         }
-        Review.create_review(review)
-        return redirect(url_for('index'))
-    return render_template('add_review.html', form=form)
+        flash("Order created successfully!", "success")
+        return redirect(url_for('create_order'))
 
-@app.route('/review/view', methods=['GET', 'POST'])
-def view_review_route():
-    form = ReviewViewForm()
+    return render_template('create_order.html', form=form)
+
+@app.route('/view-order', methods=['GET', 'POST'])
+def view_order_route():
+    form = OrderViewForm()
     if form.validate_on_submit():
-        idbook = form.idbook.data
-        return redirect(f'/api/review/{idbook}')
+        idorder = form.idorder.data
+        return redirect(f'/api/order-detail/{idorder}')
+    return render_template('view_order.html', form=form)
 
-    return render_template('view_review.html', form=form)
-
-@app.route('/review/delete', methods=['GET','POST'])
-def delete_review_route():
-    form = ReviewDeleteForm()
-    if form.validate_on_submit():
-        iduser = form.iduser.data
-        reviewdate = form.reviewdate.data
-        idbook = form.idbook.data
-
-        reviewdate_str = reviewdate.strftime('%Y-%m-%d')
-        return redirect(f'/api/review/{idbook}/{reviewdate_str}/{iduser}')
-
-    return render_template('delete_review.html', form=form)
-
-@app.route('/review/update', methods=['GET', 'POST'])
-def update_review_route():
-    form = ReviewUpdateForm()
-
+@app.route('/view-user-orders', methods=['GET', 'POST'])
+def view_user_orders_route():
+    form = UserOrdersViewForm()
     if form.validate_on_submit():
         iduser = form.iduser.data
+        return redirect(f'/api/order/{iduser}')
+    return render_template('view_user_orders.html', form=form)
+
+@app.route('/view-user-orders-by-date', methods=['GET', 'POST'])
+def view_user_orders_by_date_route():
+    form = UserOrdersByDateViewForm()
+    if form.validate_on_submit():
+        iduser = form.iduser.data
+        date = form.date.data.strftime('%Y-%m-%d')
+        return redirect(f'/api/orders-by-date/{iduser}/{date}')
+    return render_template('view_user_orders_by_date.html', form=form)
+
+
+@app.route('/view-order-details', methods=['GET', 'POST'])
+def view_order_details_route():
+    form = UserOrderDetailsViewForm()
+    if form.validate_on_submit():
+        idorder = form.idorder.data
+        return redirect(f'/api/order-details/{idorder}')
+    return render_template('view_order_details.html', form=form)
+
+@app.route('/update-order-quantity', methods=['GET', 'POST'])
+def update_order_quantity_route():
+    form = OrdeQuantityUpdateForm()
+    if form.validate_on_submit():
+        idorder = form.idorder.data
         idbook = form.idbook.data
-        reviewdate = form.reviewdate.data
-        comment = form.comment.data
-        rating = form.rating.data
+        cantity = form.cantity.data
 
-        updated_review = Review.update_review(reviewdate, iduser, idbook, rating, comment)
+        # Redirect to API for processing
+        return redirect(f'/api/update-order?idorder={idorder}&idbook={idbook}&cantity={cantity}')
 
-        if updated_review:
-            return redirect(url_for('index')) #success
-        else:
-            return "Review not found for the specified book, user, and review date", 404
-    return render_template('update_review.html', form=form)
+    return render_template('update_order_quantity.html', form=form)
 
-api.add_resource(ReviewAPI, '/api/review/<int:idbook>')
-api.add_resource(DelReviewApi, '/api/review/<int:idbook>/<string:reviewdate>/<int:iduser>')
-api.add_resource(ReviewsAPI, '/api/reviews')
-
+api.add_resource(OrderAPI, '/api/order/<int:iduser>')
+api.add_resource(OrderDetailAPI, '/api/order-detail/<int:idorder>')
+api.add_resource(OrderDetailAPI, '/api/order-details/<int:idorder>')
+api.add_resource(OrderAPI, '/api/orders-by-date/<int:iduser>/<string:date>')
+api.add_resource(UpdateOrdersDetailsApi, '/api/update-order')
 
 if __name__ == '__main__':
     app.run(debug=True)
