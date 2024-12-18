@@ -1,16 +1,19 @@
 from forms import ReviewAddForm, ReviewViewForm, ReviewDeleteForm, ReviewUpdateForm
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for,flash
 from flask_restful import Api
 import os
 from resources import ReviewAPI, ReviewsAPI, DelReviewApi
 from reviewModel import db, Review
-
+from rabbitmq import send_message_with_response
+import pika
+import json
 DB_HOST = os.getenv('DB_HOST', 'postgres')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
 DB_NAME = os.getenv('DB_NAME', 'db')
 
 app = Flask(__name__)
+book_exists_response = None
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 app.config['SECRET_KEY'] = "SECRET_KEY"
@@ -34,9 +37,43 @@ def add_review_route():
             'rating': form.rating.data,
             'comment': form.comment.data,
         }
-        Review.create_review(review)
-        return redirect(url_for('index'))
+        book_id = str(form.idbook.data)
+        response = send_message_with_response(
+            'check_book_existence',
+            {'bookId': book_id}
+        )
+
+        if response.get('exists'):
+            # Add review if the book exists
+            Review.create_review(review)
+            flash("Review added successfully!", "success")
+            return redirect(url_for('index'))
+        else:
+            flash("Book does not exist. Cannot add review.", "error")
+
+        # book_exists = send_message_to_queue({'idbook':form.idbook.data})  # Send to RabbitMQ
+        #
+        # if book_exists:
+        #     # Logic for creating the review (e.g., saving it to the database)
+        #     flash("Review successfully added!", "success")
+        #     Review.create_review(review)
+        #     return redirect(url_for('index'))
+        # else:
+        #     flash("Error: The book does not exist.", 'error')
+
+        # if wait_for_book_response(form.idbook.data):
+        #     review = Review.create_review(review)
+        #     return redirect(url_for('index'))
+        # else:
+        #     flash("Error: The book does not exist. Review cannot be created.", 'error')
     return render_template('add_review.html', form=form)
+
+# def send_message_to_queue(bookid_data):
+#     channel = connect_rabbitmq()
+#     send_message(channel, 'book_queue', bookid_data)
+#     # channel.close()
+
+
 
 @app.route('/review/view', methods=['GET', 'POST'])
 def view_review_route():

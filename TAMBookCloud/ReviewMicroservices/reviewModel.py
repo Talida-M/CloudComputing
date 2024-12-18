@@ -1,8 +1,5 @@
 from datetime import datetime
-
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column
-from sqlalchemy.dialects.mysql import DATETIME
 
 db = SQLAlchemy()
 
@@ -48,7 +45,6 @@ class Review(db.Model):
         rating= review_data['rating'],
         comment= review_data['comment']
         )
-
         db.session.add(review)
         db.session.commit()
         return review
@@ -77,3 +73,8 @@ class Review(db.Model):
             db.session.commit()
             return {"message": f"Review has been successfully deleted."}, 200
         return {"message": f"Failed to delete the review.Not found"}, 404
+
+# def send_message_to_queue(bookid_data):
+#     channel = connect_rabbitmq()
+#     send_message(channel, 'book_queue', bookid_data)
+#     channel.close()

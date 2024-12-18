@@ -63,11 +63,11 @@ services:
       DB_PASSWORD: my-secret-pw
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
-      #RABBITMQ_HOST: rabbitmq
+      RABBITMQ_HOST: rabbitmq
     depends_on:
       - postgres
 #      - redis
-     # - rabbitmq
+      - rabbitmq
 
   book-microservices:
     build:
@@ -85,11 +85,26 @@ services:
       DB_PASSWORD: my-secret-pw
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
-      #RABBITMQ_HOST: rabbitmq
+      RABBITMQ_HOST: rabbitmq
     depends_on:
       - postgres
 #      - redis
-     # - rabbitmq
+      - rabbitmq
+
+  book-consumer:
+    build:
+      context: ./BookMicroservices
+      dockerfile: Dockerfile-consumer
+    container_name: tam-book-consumer
+    environment:
+      DB_HOST: postgres
+      DB_NAME: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+      RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
 
 networks:
   my-network:
