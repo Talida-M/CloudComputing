@@ -147,15 +147,18 @@ class Book(db.Model):
         db.session.add(book)
         db.session.commit()
 
+    @classmethod
+    def get_book_by_id(cls, idbook):
+        book = Book.query.filter_by(idbook=idbook).first()
+        return book.to_dict() if book else None
 
     @classmethod
     def get_book_by_name(cls, name):
-        book = Book.query.filter_by(name=name).first()#.all()
-        return book.to_dict() if book else None
-        # if book is not None:
-        #     return book
-        # else:
-        #     return {"error": "Book not found", "status": 404}, 404
+        books = Book.query.filter_by(name=name).all()
+        if books is not None:
+            return books
+        # book = Book.query.filter_by(name=name).first()
+        # return book.to_dict() if book else None
 
 
     @classmethod

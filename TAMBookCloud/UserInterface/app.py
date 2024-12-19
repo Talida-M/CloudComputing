@@ -128,21 +128,21 @@ def home():
 @app.route('/search-book', methods=['GET', 'POST'])
 @login_required
 def search_book():
-    book_details = None
-    error_message = None
     if request.method == 'POST':
         book_name = request.form.get('book_name')
+        book_id = request.form.get('book_id')
         if not book_name:
             return render_template('search_book.html', error="Please select a book name.",book_name=book_name)
 
         try:
                 # Call the BookMicroservice to get details of the selected book
-            response = requests.get(f'{bookMicroservUrl}/api/book/{book_name}')
+            response = requests.get(f'{bookMicroservUrl}/api/book/byid/{book_id}')
             if response.status_code == 200:
                 book_details = response.json()
                 return render_template('search_book.html', book_details=book_details,book_name=book_name)
             else:
-                return render_template('search_book.html', error="Book not found.",book_name=book_name)
+                return render_template('register.html')
+                # return render_template('search_book.html', error="Book not found.",book_name=book_name)
         except requests.exceptions.RequestException as e:
             return render_template('search_book.html', error=str(e),book_name=book_name)
 

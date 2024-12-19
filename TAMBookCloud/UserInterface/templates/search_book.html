@@ -57,6 +57,7 @@
         <div>
             <label for="book_name">Book Name</label><br>
             <input type="text" name="book_name" id="book_name" value="{{ request.form.get('book_name', '') }}" autocomplete="off">
+            <input type="hidden" name="book_id" id="book_id"> <!-- Hidden field to store the selected book's ID -->
             <div id="dropdown" style="border: 1px solid #ccc; display: none; max-height: 200px; overflow-y: auto;"></div>
             <button type="submit">Search</button>
         </div>
@@ -66,6 +67,7 @@
         $(document).ready(function() {
             const $input = $("input[name='book_name']");
             const $dropdown = $("#dropdown");
+            const $bookId = $("#book_id");
             let booksCache = [];
 
             function fetchBooks() {
@@ -93,7 +95,7 @@
 
                 if (filteredBooks.length > 0) {
                   filteredBooks.forEach(book => {
-                    const option = `<div style="padding: 5px; cursor: pointer;" data-name="${book.name}">
+                    const option = `<div style="padding: 5px; cursor: pointer;" data-name="${book.name}" data-id="${book.idbook}">
                                       (${book.name}) ${book.authorname}
                                     </div>`;
                     $dropdown.append(option);
@@ -110,7 +112,9 @@
 
             $dropdown.on('click', 'div', function() {
                 const selectedBookName = $(this).data('name');
+                const selectedBookId = $(this).data('id');
                 $input.val(selectedBookName);
+                $bookId.val(selectedBookId);
                 $dropdown.hide();
             });
         });

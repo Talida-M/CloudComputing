@@ -1,8 +1,4 @@
-from datetime import datetime
-
 from flask_restful import Resource, reqparse
-import os
-
 from models import Author,Book
 # from authorModel import Author
 # from bookModel import Book
@@ -48,9 +44,16 @@ class AuthorAPI(Resource):#by names
 
 class BookAPI(Resource):#by names
     def get(self,name):
-        # books = Book.get_book_by_name(name)
-        # return [book.to_dict() for book in books], 200
-        book = Book.get_book_by_name(name)
+        books = Book.get_book_by_name(name)
+        return [book.to_dict() for book in books], 200
+        # book = Book.get_book_by_name(name)
+        # if book:
+        #     return book, 200
+        # return {'message': 'Book not found'}, 404
+
+class BookByiD(Resource):
+    def get(self,idbook):
+        book = Book.get_book_by_id(idbook)
         if book:
             return book, 200
         return {'message': 'Book not found'}, 404
