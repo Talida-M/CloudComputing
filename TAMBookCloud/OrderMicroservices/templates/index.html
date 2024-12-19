@@ -7,10 +7,11 @@
   <body>
     <h1>BookShop TAM</h1>
 
-    <a href="/review/add">Add Review</a><br>
-    <a href="/review/update">Update Review</a><br>
-    <a href="/review/delete">Delete Review</a><br>
-    <a href="/review/view">View review for book</a><br>
+    <a href="/order/create-order">Add Order</a><br>
+    <a href="/order/update-order">Update Order</a><br>
+    <a href="/order/delete">Delete Order</a><br>
+    <a href="/order-details/view">View order details</a><br>
+    <a href="/orders-by-date/view">View user order </a><br>
 	{% with messages = get_flashed_messages(with_categories=true) %}
 	{% if messages %}
 	<ul>

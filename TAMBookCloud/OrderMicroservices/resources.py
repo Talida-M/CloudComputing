@@ -6,8 +6,8 @@ import os
 
 from sqlalchemy.dialects.mysql import DATETIME
 
-from orderDetailModel import  Order_Detail
-from orderModel import  Order
+from models import Order_Detail,Order
+
 parser = reqparse.RequestParser()
 parser.add_argument('idorder', required=True, help="Order id cannot be blank")
 parser.add_argument('idbook', required=True,type=int, help="Book id cannot be blank")

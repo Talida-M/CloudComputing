@@ -16,3 +16,7 @@ docker run -it --rm --name tam-review-app reviewmicroservicetam
 
 docker build -t bookmicroservicetam ./BookMicroservices
 docker run -it --rm --name tam-book-app bookmicroservicetam
+
+
+docker build -t ordermicroservicetam ./OrderMicroservices
+docker run -it --rm --name tam-order-app ordermicroservicetam

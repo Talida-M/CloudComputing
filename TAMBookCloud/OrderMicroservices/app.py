@@ -3,8 +3,8 @@ from flask_restful import Api
 import os
 from forms import OrderAddForm, UserOrdersViewForm, OrderViewForm, UserOrderDetailsViewForm, UserOrdersByDateViewForm, \
     OrdeQuantityUpdateForm
-from orderDetailModel import db, Order_Detail
-from resources import OrderAPI, OrderDetailAPI, UpdateOrdersDetailsApi
+from models import db, Order_Detail,Order
+from resources import OrderAPI, OrderDetailAPI, UpdateOrdersDetailsApi,OrdersAPI
 
 DB_HOST = os.getenv('DB_HOST', 'postgres')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
@@ -25,7 +25,7 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
-@app.route('/create-order', methods=['GET', 'POST'])
+@app.route('/order/create-order', methods=['GET', 'POST'])
 def create_order():
     form = OrderAddForm()
 
@@ -49,7 +49,7 @@ def view_order_route():
     form = OrderViewForm()
     if form.validate_on_submit():
         idorder = form.idorder.data
-        return redirect(f'/api/order-detail/{idorder}')
+        return redirect(f'/api/order-details/{idorder}')
     return render_template('view_order.html', form=form)
 
 @app.route('/view-user-orders', methods=['GET', 'POST'])
@@ -91,8 +91,7 @@ def update_order_quantity_route():
 
     return render_template('update_order_quantity.html', form=form)
 
-api.add_resource(OrderAPI, '/api/order/<int:iduser>')
-api.add_resource(OrderDetailAPI, '/api/order-detail/<int:idorder>')
+api.add_resource(OrdersAPI, '/api/order/<int:iduser>')
 api.add_resource(OrderDetailAPI, '/api/order-details/<int:idorder>')
 api.add_resource(OrderAPI, '/api/orders-by-date/<int:iduser>/<string:date>')
 api.add_resource(UpdateOrdersDetailsApi, '/api/update-order')

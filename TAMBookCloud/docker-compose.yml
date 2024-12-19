@@ -94,6 +94,7 @@ services:
       - rabbitmq
     restart: always
 
+
   user-interface:
     build:
       context: ./UserInterface
@@ -125,6 +126,30 @@ services:
 #    depends_on:
 #      - postgres
 #      - rabbitmq
+
+  order-microservices:
+    build:
+      context: ./OrderMicroservices
+      dockerfile: Dockerfile
+    container_name: tam-order-app
+    networks:
+      - my-network
+    ports:
+      - "5006:8000"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+#      REDIS_HOST: redis
+#      REDIS_DATABASE: "0"
+      RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - postgres
+#      - redis
+      - rabbitmq
+    restart: always
+
 
 networks:
   my-network:
