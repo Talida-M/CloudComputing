@@ -4,7 +4,7 @@ from flask_restful import Api
 import os
 from resources import ReviewAPI, ReviewsAPI, DelReviewApi
 from reviewModel import db, Review
-from rabbitmq import send_message_with_response
+# from rabbitmq import send_message_with_response
 import pika
 import json
 DB_HOST = os.getenv('DB_HOST', 'postgres')
@@ -38,19 +38,19 @@ def add_review_route():
             'rating': form.rating.data,
             'comment': form.comment.data,
         }
-        book_id = str(form.idbook.data)
-        response = send_message_with_response(
-            'check_book_existence',
-            {'bookId': book_id}
-        )
-
-        if response.get('exists'):
+        # book_id = str(form.idbook.data)
+        # response = send_message_with_response(
+        #     'check_book_existence',
+        #     {'bookId': book_id}
+        # )
+        #
+        # if response.get('exists'):
             # Add review if the book exists
-            Review.create_review(review)
-            flash("Review added successfully!", "success")
-            return redirect(url_for('index'))
-        else:
-            flash("Book does not exist. Cannot add review.", "error")
+        Review.create_review(review)
+        #     flash("Review added successfully!", "success")
+        #     return redirect(url_for('index'))
+        # else:
+        #     flash("Book does not exist. Cannot add review.", "error")
 
         # book_exists = send_message_to_queue({'idbook':form.idbook.data})  # Send to RabbitMQ
         #

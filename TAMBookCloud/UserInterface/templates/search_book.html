@@ -137,6 +137,27 @@
         <p><strong>Stock Status:</strong> {{ book_details.stockstatus }}</p>
         <p><strong>Price:</strong> ${{ book_details.price }}</p>
     </div>
+
+    <h3>Submit Review</h3>
+    <form action="/submit-review" method="POST">
+        <input type="hidden" name="idbook" value="{{ book_details.idbook }}">
+        <label for="rating">Rating (1-5):</label>
+        <input type="number" name="rating" id="rating" min="1" max="5" required><br><br>
+        <label for="comment">Comment:</label><br>
+        <textarea name="comment" id="comment" rows="4" cols="50" required></textarea><br><br>
+        <button type="submit">Submit Review</button>
+    </form>
     {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div>
+                    {% for category, message in messages %}
+                        <div class="notification {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 </body>
 </html>

@@ -138,6 +138,6 @@ api.add_resource(BookByiD, '/api/book/byid/<string:idbook>')
 
 
 if __name__ == '__main__':
-    start_service()
+    # start_service()
     # app.run(debug=True, host="0.0.0.0", port=8000)
     app.run(debug=True)

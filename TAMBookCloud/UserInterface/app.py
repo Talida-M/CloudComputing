@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, session, redirect, url_for, request, render_template
+from flask import Flask, jsonify, session, redirect, url_for, request, render_template, flash
 import requests
 import jwt
 
@@ -149,6 +149,43 @@ def search_book():
     # Render the search page for GET requests
     return render_template('search_book.html',book_name="")
 
+
+@app.route('/submit-review', methods=['POST'])
+@login_required
+def submit_review():
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
+    try:
+        # Decode the token to extract user information
+        payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+        iduser = payload.get('iduser')  # Extract user_id from the payload
+    except jwt.InvalidTokenError:
+        return redirect(url_for('login'))
+
+    idbook = request.form.get('idbook')
+    rating = request.form.get('rating')
+    comment = request.form.get('comment')
+    if not idbook or not rating or not comment:
+       flash("All fields are required.","error")
+
+        # Call the ReviewMicroservice to submit the review
+    try:
+        review_payload = {
+            'iduser': iduser,
+            'idbook': idbook,
+            'rating': int(rating),
+            'comment': comment
+        }
+        response = requests.post(f'{reviewMicroservUrl}/api/reviews', json=review_payload)
+        if response.status_code == 200:
+            flash("Review submitted successfully!", "success")
+            return redirect(url_for('search_book'))
+        else:
+            flash("Failed to submit the review.", "error")
+
+    except requests.exceptions.RequestException as e:
+        flash("Caution.", "error")
 
 if __name__ == '__main__':
     app.run(debug=True)

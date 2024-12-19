@@ -47,7 +47,7 @@ class Review(db.Model):
         )
         db.session.add(review)
         db.session.commit()
-        return review
+        return review.to_dict()
 
     @classmethod
     def get_reviews_for_book(cls, idbook):
