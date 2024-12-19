@@ -7,5 +7,5 @@ COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 COPY . .
-
 ENTRYPOINT ["gunicorn", "app:app", "--bind", "0.0.0.0:8000"]
+#CMD ["python", "-u", "app.py"]

@@ -1,8 +1,21 @@
+from flask import Flask, request, jsonify, make_response
+from flask_restful import Resource, Api
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token
+import uuid
+import datetime
+
+# Initialize Flask app and extensions
+
+
 from flask import Flask, render_template, redirect, url_for, make_response
 from flask_restful import Api
 import os
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token
+
+from resources import Register,Login
 from forms import LoginForm,RegisterForm
 from userModel import db,User
 from datetime import timedelta
@@ -13,8 +26,12 @@ DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
 DB_NAME = os.getenv('DB_NAME', 'db')
 
 app = Flask(__name__)
-bcrypt = Bcrypt(app)
 api = Api(app)
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
+
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 app.config['SECRET_KEY'] = "SECRET_KEY"
 
@@ -23,12 +40,12 @@ app.config['JWT_SECRET_KEY'] = '12345678910'
 # app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=2)
 
-jwt = JWTManager(app)
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
-
+api.add_resource(Register, '/api/register')
+api.add_resource(Login, '/api/login')
 @app.route('/')
 def index():
     return render_template('index.html')

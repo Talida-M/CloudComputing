@@ -46,6 +46,7 @@ services:
       DB_PASSWORD: my-secret-pw
     depends_on:
       - postgres
+    restart: always
 
   review-microservices:
     build:
@@ -68,6 +69,7 @@ services:
       - postgres
 #      - redis
       - rabbitmq
+    restart: always
 
   book-microservices:
     build:
@@ -90,21 +92,39 @@ services:
       - postgres
 #      - redis
       - rabbitmq
+    restart: always
 
-  book-consumer:
+  user-interface:
     build:
-      context: ./BookMicroservices
-      dockerfile: Dockerfile-consumer
-    container_name: tam-book-consumer
+      context: ./UserInterface
+      dockerfile: Dockerfile
+    container_name: tam-user-interface-app
+    networks:
+      - my-network
+    ports:
+      - "5005:8000"
     environment:
       DB_HOST: postgres
       DB_NAME: db
       DB_USERNAME: postgres
       DB_PASSWORD: my-secret-pw
-      RABBITMQ_HOST: rabbitmq
     depends_on:
       - postgres
-      - rabbitmq
+    restart: always
+#  book-consumer:
+#    build:
+#      context: ./BookMicroservices
+#      dockerfile: Dockerfile-consumer
+#    container_name: tam-book-consumer
+#    environment:
+#      DB_HOST: postgres
+#      DB_NAME: db
+#      DB_USERNAME: postgres
+#      DB_PASSWORD: my-secret-pw
+#      RABBITMQ_HOST: rabbitmq
+#    depends_on:
+#      - postgres
+#      - rabbitmq
 
 networks:
   my-network:

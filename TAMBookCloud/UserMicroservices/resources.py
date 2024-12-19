@@ -1,8 +1,8 @@
-from tkinter.font import names
 import uuid
+from flask import request
 from flask_bcrypt import Bcrypt
 from flask_restful import Resource, reqparse
-from userModel import User
+from userModel import User, db
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -37,6 +37,52 @@ class UserRegister(Resource):
 
         except:
             return {'message': 'Unsuccessful register'}, 500
+
+
+
+class Register(Resource):
+    def post(self):
+        data = request.get_json()
+        #data = parser.parse_args()
+        if not data or not data.get('email') or not data.get('password') or not data.get('name'):
+            return {'message': 'Missing required fields'}, 400
+
+        if User.find_by_email(data['email']):
+            return {'message': 'User with this email already exists'}, 409
+
+        hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+        # Create a new user
+        new_user = User(
+            iduser = uuid.uuid4(),
+            name=data['name'],
+            email=data['email'],
+            password=hashed_password#data['password']
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return {'message': 'User registered successfully', 'user': new_user.to_dict()}, 201
+
+
+class Login(Resource):
+    def post(self):
+        data = request.get_json()
+        if not data or not data.get('email') or not data.get('password'):
+            return {'message': 'Missing email or password'}, 400
+
+        user = User.find_by_email(data['email'])
+        if user and bcrypt.check_password_hash(user.password, data['password']):
+            # Create JWT token
+            additional_claims = {
+                "iduser": user.iduser
+            }
+            access_token = create_access_token(identity=user.email, additional_claims=additional_claims)
+            return {'message': 'Login successful', 'access_token': access_token}, 200
+
+        return {'message': 'Invalid email or password'}, 401
+
+
+
+
 
 class UserLogin(Resource):
 

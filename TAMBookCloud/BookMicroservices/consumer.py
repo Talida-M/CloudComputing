@@ -11,6 +11,8 @@ DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
 
 # PostgreSQL connection setup
+
+
 def get_postgres_connection():
     conn = psycopg.connect(
         dbname=DB_NAME,
@@ -26,17 +28,21 @@ def book_exists(idbook):
     print(f"laaaaaaaaaa{idbook}")
     conn = get_postgres_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT EXISTS (SELECT 1 FROM books WHERE idbook = %s",(idbook,))
+    cursor.execute(
+        "SELECT EXISTS (SELECT 1 FROM books WHERE idbook = %s)", (idbook,))
+
     exists_b = cursor.fetchone()[0]
     conn.close()
     return exists_b
 
 # Callback function that will be triggered when a message is received from RabbitMQ
+
+
 def callback(ch, method, properties, body):
     print("Received a new idbook message")
 
     bookid_data = json.loads(body)
-    book_id = bookid_data['idbook']
+    book_id = bookid_data['bookId']
 
     exists_book = book_exists(book_id)
 
@@ -55,15 +61,17 @@ def callback(ch, method, properties, body):
 
 # Set up RabbitMQ connection and channel
 def start_service():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=RABBITMQ_HOST))
     channel = connection.channel()
     channel.queue_declare(queue='check_book_existence')
 
     # Consume the request for checking book existence
-    channel.basic_consume(queue='check_book_existence', on_message_callback=callback)
+    channel.basic_consume(queue='check_book_existence',
+                          on_message_callback=callback)
 
     print("BookService: Awaiting book existence check requests...")
     channel.start_consuming()
 
-if __name__ == '__main__':
-    start_service()
+# if __name__ == '__main__':
+#     start_service()
