@@ -10,7 +10,7 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        h1 {
+        h1,h3 {
             text-align: center;
             color: #333;
         }
@@ -48,6 +48,34 @@
         .error-message {
             color: red;
             text-align: center;
+        }
+         .reviews-section {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .review-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .review-card h4 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .review-card p {
+            margin-top: 10px;
+            color: #666;
+        }
+        .review-card .rating {
+            font-weight: bold;
+            color: #f39c12; /* Gold color for rating */
+        }
+        .review-card .date {
+            font-size: 14px;
+            color: #aaa;
         }
     </style>
 </head>
@@ -147,6 +175,18 @@
         <textarea name="comment" id="comment" rows="4" cols="50" required></textarea><br><br>
         <button type="submit">Submit Review</button>
     </form>
+    {% if reviews %}
+    <div class="reviews-section">
+        <h3>Reviews</h3>
+        {% for review in reviews %}
+        <div class="review-card">
+            <h4>{{ review.user_name }} <span class="date">({{ review.reviewdate }})</span></h4>
+            <p class="rating">Rating: {{ review.rating }}</p>
+            <p>{{ review.comment }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endif %}
     {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

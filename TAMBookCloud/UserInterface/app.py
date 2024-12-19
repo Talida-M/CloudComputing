@@ -139,7 +139,14 @@ def search_book():
             response = requests.get(f'{bookMicroservUrl}/api/book/byid/{book_id}')
             if response.status_code == 200:
                 book_details = response.json()
-                return render_template('search_book.html', book_details=book_details,book_name=book_name)
+
+                review_response = requests.get(f'{reviewMicroservUrl}/api/review/{book_id}')
+                reviews = []
+                if review_response.status_code == 200:
+                    reviews = review_response.json()
+
+
+                return render_template('search_book.html', book_details=book_details,book_name=book_name,reviews=reviews)
             else:
                 return render_template('register.html')
                 # return render_template('search_book.html', error="Book not found.",book_name=book_name)
