@@ -35,7 +35,7 @@ jwt = JWTManager(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 app.config['SECRET_KEY'] = "SECRET_KEY"
 
-app.config['JWT_SECRET_KEY'] = '12345678910'
+app.config['JWT_SECRET_KEY'] = '12345678910' #this one is used for token creation
 # app.config['JWT_BLACKLIST_ENABLED'] = True
 # app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=2)
