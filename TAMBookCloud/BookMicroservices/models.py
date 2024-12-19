@@ -150,11 +150,12 @@ class Book(db.Model):
 
     @classmethod
     def get_book_by_name(cls, name):
-        books = Book.query.filter_by(name=name).all()
-        if books is not None:
-            return books
-        else:
-            return {"error": "Book not found", "status": 404}, 404
+        book = Book.query.filter_by(name=name).first()#.all()
+        return book.to_dict() if book else None
+        # if book is not None:
+        #     return book
+        # else:
+        #     return {"error": "Book not found", "status": 404}, 404
 
 
     @classmethod

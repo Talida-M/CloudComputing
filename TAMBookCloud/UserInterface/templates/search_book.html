@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Book</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #dropdown {
+            border: 1px solid #ccc;
+            max-width: 300px;
+            margin: 0 auto;
+            display: none;
+            background-color: #fff;
+            max-height: 200px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1000;
+        }
+        #dropdown div {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #ddd;
+        }
+        #dropdown div:hover {
+            background-color: #f0f0f0;
+        }
+        .book-details, .error-message {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search for a Book</h1>
+    <form method="POST">
+        <div>
+            <label for="book_name">Book Name</label><br>
+            <input type="text" name="book_name" id="book_name" value="{{ request.form.get('book_name', '') }}" autocomplete="off">
+            <div id="dropdown" style="border: 1px solid #ccc; display: none; max-height: 200px; overflow-y: auto;"></div>
+            <button type="submit">Search</button>
+        </div>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            const $input = $("input[name='book_name']");
+            const $dropdown = $("#dropdown");
+            let booksCache = [];
+
+            function fetchBooks() {
+              $.ajax({
+                url: '/books',  // This assumes the books endpoint provides the data in the correct format
+                method: 'GET',
+                success: function(data) {
+                  booksCache = data;
+                  console.log("Books loaded into cache:", booksCache);
+                }
+              });
+            }
+
+            fetchBooks();
+
+            $input.on('input', function() {
+              const query = $input.val().toLowerCase();
+
+              if (query.length > 0) {
+                const filteredBooks = booksCache.filter(book =>
+                  book.name.includes(query) || book.name.toLowerCase().includes(query)
+                );
+
+                $dropdown.empty();
+
+                if (filteredBooks.length > 0) {
+                  filteredBooks.forEach(book => {
+                    const option = `<div style="padding: 5px; cursor: pointer;" data-name="${book.name}">
+                                      (${book.name}) ${book.authorname}
+                                    </div>`;
+                    $dropdown.append(option);
+                  });
+
+                  $dropdown.show();
+                } else {
+                  $dropdown.hide();
+                }
+              } else {
+                $dropdown.hide();
+              }
+            });
+
+            $dropdown.on('click', 'div', function() {
+                const selectedBookName = $(this).data('name');
+                $input.val(selectedBookName);
+                $dropdown.hide();
+            });
+        });
+    </script>
+
+    <!-- Display error messages -->
+    {% if error_message %}
+    <div class="error-message">{{ error_message }}</div>
+    {% endif %}
+
+    <!-- Display book details if available -->
+    {% if book_details %}
+    <div class="book-details">
+        <h2>{{ book_details.name }}</h2>
+        <p><strong>Author:</strong> {{ book_details.authorname }}</p>
+        <p><strong>Description:</strong> {{ book_details.description }}</p>
+        <p><strong>Category:</strong> {{ book_details.category }}</p>
+        <p><strong>Publisher:</strong> {{ book_details.publisher }}</p>
+        <p><strong>Year:</strong> {{ book_details.year }}</p>
+        <p><strong>Stock Status:</strong> {{ book_details.stockstatus }}</p>
+        <p><strong>Price:</strong> ${{ book_details.price }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>

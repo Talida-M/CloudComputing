@@ -96,6 +96,20 @@ def login_required(f):
     wrapper.__name__ = f.__name__
     return wrapper
 
+@app.route('/books')
+@login_required
+def books():
+    try:
+        # Make a GET request to fetch books
+        response = requests.get(f'{bookMicroservUrl}/api/book/')
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        books = response.json()  # Parse the JSON response
+
+        return jsonify(books)  # Return the books as JSON
+    except requests.exceptions.RequestException as e:
+        # Handle any exceptions that occur during the request
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/m')
 @login_required
@@ -105,10 +119,35 @@ def home():
         response = requests.get(f'{bookMicroservUrl}/api/book/')
         response.raise_for_status()  # Raise an exception for HTTP errors
         books = response.json()  # Parse the JSON response
-        return jsonify(books)  # Return the books as JSON
+        return render_template('booksView.html', books=books)
+        #return jsonify(books)  # Return the books as JSON
     except requests.exceptions.RequestException as e:
         # Handle any exceptions that occur during the request
         return jsonify({'error': str(e)}), 500
+
+@app.route('/search-book', methods=['GET', 'POST'])
+@login_required
+def search_book():
+    book_details = None
+    error_message = None
+    if request.method == 'POST':
+        book_name = request.form.get('book_name')
+        if not book_name:
+            return render_template('search_book.html', error="Please select a book name.",book_name=book_name)
+
+        try:
+                # Call the BookMicroservice to get details of the selected book
+            response = requests.get(f'{bookMicroservUrl}/api/book/{book_name}')
+            if response.status_code == 200:
+                book_details = response.json()
+                return render_template('search_book.html', book_details=book_details,book_name=book_name)
+            else:
+                return render_template('search_book.html', error="Book not found.",book_name=book_name)
+        except requests.exceptions.RequestException as e:
+            return render_template('search_book.html', error=str(e),book_name=book_name)
+
+    # Render the search page for GET requests
+    return render_template('search_book.html',book_name="")
 
 
 if __name__ == '__main__':

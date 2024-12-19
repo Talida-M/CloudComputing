@@ -48,8 +48,12 @@ class AuthorAPI(Resource):#by names
 
 class BookAPI(Resource):#by names
     def get(self,name):
-        books = Book.get_book_by_name(name)
-        return [book.to_dict() for book in books], 200
+        # books = Book.get_book_by_name(name)
+        # return [book.to_dict() for book in books], 200
+        book = Book.get_book_by_name(name)
+        if book:
+            return book, 200
+        return {'message': 'Book not found'}, 404
 
 
 class BooksAPI(Resource):
