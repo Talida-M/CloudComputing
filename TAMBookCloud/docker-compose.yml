@@ -12,7 +12,50 @@ services:
       POSTGRES_DB: db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      - ./OrderMicroservices/data:/var/lib/postgresql/data
 
+  userdb:
+    image: postgres
+    container_name: user_db_TAM
+    networks:
+      - my-network
+#    ports:
+#      - "5433:5432"
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      - ./UserMicroservices/data:/var/lib/postgresql/data
+
+  reviewdb:
+    image: postgres
+    container_name: review_db_TAM
+    networks:
+      - my-network
+#    ports:
+#      - "5434:5432"
+    environment:
+      POSTGRES_DB: reviewdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      - ./ReviewMicroservices/data:/var/lib/postgresql/data
+
+  bookdb:
+    image: postgres
+    container_name: book_db_TAM
+    networks:
+      - my-network
+    #    ports:
+    #      - "5435:5432"
+    environment:
+      POSTGRES_DB: bookdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      - ./BookMicroservices/data:/var/lib/postgresql/data
 #  redis:
 #    image: redis
 #    container_name: redis
@@ -40,12 +83,12 @@ services:
     ports:
       - "5002:8000"
     environment:
-      DB_HOST: postgres
-      DB_NAME: db
+      DB_HOST: userdb
+      DB_NAME: userdb
       DB_USERNAME: postgres
       DB_PASSWORD: my-secret-pw
     depends_on:
-      - postgres
+      - userdb #nume serviciu
     restart: always
 
   review-microservices:
@@ -58,15 +101,16 @@ services:
     ports:
       - "5003:8000"
     environment:
-      DB_HOST: postgres
-      DB_NAME: db
+      DB_HOST: reviewdb
+      DB_NAME: reviewdb
       DB_USERNAME: postgres
       DB_PASSWORD: my-secret-pw
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
       RABBITMQ_HOST: rabbitmq
     depends_on:
-      - postgres
+      - reviewdb
+#      - postgres
 #      - redis
       - rabbitmq
     restart: always
@@ -81,15 +125,15 @@ services:
     ports:
       - "5004:8000"
     environment:
-      DB_HOST: postgres
-      DB_NAME: db
+      DB_HOST: bookdb
+      DB_NAME: bookdb
       DB_USERNAME: postgres
       DB_PASSWORD: my-secret-pw
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
       RABBITMQ_HOST: rabbitmq
     depends_on:
-      - postgres
+      - bookdb
 #      - redis
       - rabbitmq
     restart: always
@@ -104,28 +148,15 @@ services:
       - my-network
     ports:
       - "5005:8000"
-    environment:
-      DB_HOST: postgres
-      DB_NAME: db
-      DB_USERNAME: postgres
-      DB_PASSWORD: my-secret-pw
-    depends_on:
-      - postgres
-    restart: always
-#  book-consumer:
-#    build:
-#      context: ./BookMicroservices
-#      dockerfile: Dockerfile-consumer
-#    container_name: tam-book-consumer
 #    environment:
 #      DB_HOST: postgres
 #      DB_NAME: db
 #      DB_USERNAME: postgres
 #      DB_PASSWORD: my-secret-pw
-#      RABBITMQ_HOST: rabbitmq
 #    depends_on:
 #      - postgres
-#      - rabbitmq
+    restart: always
+
 
   order-microservices:
     build:

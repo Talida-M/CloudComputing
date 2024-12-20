@@ -7,10 +7,10 @@ from reviewModel import db, Review
 # from rabbitmq import send_message_with_response
 import pika
 import json
-DB_HOST = os.getenv('DB_HOST', 'postgres')
+DB_HOST = os.getenv('DB_HOST', 'reviewdb')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
-DB_NAME = os.getenv('DB_NAME', 'db')
+DB_NAME = os.getenv('DB_NAME', 'reviewdb')
 
 app = Flask(__name__)
 book_exists_response = None

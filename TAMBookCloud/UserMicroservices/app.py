@@ -20,10 +20,10 @@ from forms import LoginForm,RegisterForm
 from userModel import db,User
 from datetime import timedelta
 
-DB_HOST = os.getenv('DB_HOST', 'postgres')
+DB_HOST = os.getenv('DB_HOST', 'userdb')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
-DB_NAME = os.getenv('DB_NAME', 'db')
+DB_NAME = os.getenv('DB_NAME', 'userdb')
 
 app = Flask(__name__)
 api = Api(app)
@@ -66,6 +66,8 @@ def register_route():
 
 @app.route('/login', methods=['GET','POST'])
 def login_route():
+    # jager.context.start()
+    # jager.blog("begin logging proc)")
     form = LoginForm()
     if form.validate_on_submit():
         user = User.find_by_email(form.email.data)
@@ -79,6 +81,7 @@ def login_route():
             return response
         else:
             return {'message': 'User doesn\'t exist'}
+    # jager.context.stop()
     return render_template('login.html',form=form)
 
 if __name__ == '__main__':

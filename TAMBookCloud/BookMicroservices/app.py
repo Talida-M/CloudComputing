@@ -8,10 +8,10 @@ from resources import AuthorsAPI, DelAuthorApi, BookAPI, DelBookApi, AuthorAPI, 
 # from bookModel import db, Book
 from models import db,Author,Book
 
-DB_HOST = os.getenv('DB_HOST', 'postgres')
+DB_HOST = os.getenv('DB_HOST', 'bookdb')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
-DB_NAME = os.getenv('DB_NAME', 'db')
+DB_NAME = os.getenv('DB_NAME', 'bookdb')
 
 app = Flask(__name__)
 api = Api(app)
