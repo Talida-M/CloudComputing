@@ -53,9 +53,16 @@ class SendOrderGetAPI(Resource):
         order = Order.sent_order(iduser)
         return order, 200
 
+class PendingOrderAPI(Resource):
+    def put(self, iduser):
+        order = Order.pending_order(iduser)
+        return order, 200
 
-
-
+class OrdersGetAllAPI(Resource):
+    def get(self, iduser):
+        orders = Order.get_all_order(iduser)
+        # return reviews, 200
+        return [order.to_dict() for order in orders], 200
 
 
 

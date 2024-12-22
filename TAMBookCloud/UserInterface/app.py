@@ -346,11 +346,92 @@ def decrement_book_from_order():
     return jsonify({'message': 'Book added to order successfully'}), 200
 
 
+########new it will be on click sent button
+@app.route('/sent',methods=['PUT'])
+@login_required
+def sent_order(): #when click
+
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
+    try:
+        payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+        iduser = payload.get('iduser')  # Extract user_id from the payload
+        response = requests.put(f'{orderApiMicroservUrl}/api/order/pending/{iduser}')
+        if response.status_code == 200:
+            order = response.json()
+            requests.put(f'{orderApiMicroservUrl}/api/order/send/{iduser}')
+            return {"message": "Order sent successfully"}, 200  # Return a JSON response
+        else:
+            return {"error": "Failed to update order status"}, response.status_code
+    except jwt.InvalidTokenError:
+        return redirect(url_for('login'))
+    except Exception as e:
+        return {"error": str(e)}, 500  # Handle unexpected errors
+    # return redirect(url_for('home'))
+
+#
+@app.route('/allorders',methods=['POST','GET']) #afiseaza toate orderurile
+@login_required
+def all_pending_success_orders():
+    global orders
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
+    try:
+        payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+        iduser = payload.get('iduser')  # Extract user_id from the payload
+
+        response = requests.get(f'{orderApiMicroservUrl}/api/order/allorders/{iduser}')
+
+        if response.status_code == 200:
+            orders = response.json()
+            return render_template('allorders.html', orders=orders)
+    except jwt.InvalidTokenError:
+        return redirect(url_for('login'))
+    return render_template('allorders.html', orders=orders)
+
+# @app.route('/latest-orders', methods=['GET'])
+# @login_required
+# def all_pending_success_orders():
+#     token = session.get('token')
+#     if not token:
+#         return redirect(url_for('login'))
+#     try:
+#         payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+#         iduser = payload.get('iduser')
+#
+#         response = requests.get(f'{orderApiMicroservUrl}/api/order/allorders/{iduser}')
+#         if response.status_code == 200:
+#             orders = response.json()
+#             return render_template('allorders.html', orders=orders)
+#         else:
+#             return jsonify({'error': 'Failed to fetch book details'}), 500
+#
+#     except Exception as e:
+#         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 
 
-
-
+    #             for ord in orders:
+    #                 for detail in ord.get('order_orderdetails', []):
+    #                     idbook = detail.get('idbook')
+    #
+    #                     response1 = requests.get(f'{bookMicroservUrl}/api/book/byid/{idbook}')
+    #                     if response1.status_code==200:
+    #                         book = response1.json()
+    #                         detail['idbook'] = book.get('name')
+    #             return render_template('allorders.html', orders=orders)
+    #         except ValueError as e:
+    #             return jsonify({'error': 'Error parsing JSON response from API'}), 500
+    #     else:
+    #         return jsonify({'error': 'Failed to fetch orders', 'status_code': response.status_code}), 500
+    # except requests.exceptions.RequestException as e:
+    #     return jsonify({'error': f'Request failed: {str(e)}'}), 500
+    # except jwt.InvalidTokenError:
+    #     return redirect(url_for('login'))
+    # except Exception as e:
+    #     return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 
 if __name__ == '__main__':

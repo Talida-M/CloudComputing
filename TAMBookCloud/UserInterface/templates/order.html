@@ -31,6 +31,11 @@
         </li>
         {% endfor %}
     </ul>
+   {% if order.order_orderdetails %}
+    <button class="send-order-btn">Send Order</button>
+    {% else %}
+    <button class="send-order-btn" disabled>Send Order</button>
+    {% endif %}
 
     <!-- Include the JavaScript that handles the button clicks and AJAX calls -->
     <script>
@@ -120,6 +125,25 @@
             })
             .catch(error => {
                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+
+        $('.send-order-btn').on('click', function(event) {
+            event.preventDefault();
+            console.log('Sending order...');
+
+            fetch('/sent', {
+                method: 'PUT',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Order sent successfully.');
+                window.location.href = '/m';
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
             });
         });
     });

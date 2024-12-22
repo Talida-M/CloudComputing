@@ -38,25 +38,46 @@ class Order(db.Model):
             'order_orderdetails': order_details  # Access related Order_Details
         }
 
+
+    @classmethod
+    def get_all_order(self,iduser):
+        orders = Order.query.filter(Order.iduser == iduser,Order.status.in_(["pending","success"])).order_by(Order.date.desc()).all()
+        return orders
+
     @classmethod
     def sent_order(self,iduser):
         order = Order.query.filter_by(iduser=iduser,status="pending").order_by(Order.date.desc()).first()
+        #cand facem cu rabbitmq - nu mai e nevoie de order.status si db.session.commit
+        # send_message(order)
+        # send_message_to_queue_order(order)
+        order.status = "success"
+        db.session.commit()
+        return order.to_dict()
+
+    # def send_message_to_queue_order(data):
+    #     channel = connect_rabbitmq()
+    #     send_message_order(channel, 'order_queue', data)
+    #     channel.close()
+
+    @classmethod
+    def pending_order(self, iduser):
+        order = Order.query.filter_by(iduser=iduser, status="start").order_by(Order.date.desc()).first()
         if order is None:
             return "No order found for this user"
-        order.status = "sent"
+        order.status = "pending"
         db.session.commit()
         return order.to_dict()
 
     @classmethod
     def get_or_create_order(cls,iduser):
         # order = Order.query.filter_by(iduser=iduser).first()
-        order = Order.query.filter_by(iduser=iduser,status="pending").order_by(Order.date.desc()).first()
+        order = Order.query.filter_by(iduser=iduser,status="start").order_by(Order.date.desc()).first()
 
         if not order:
             order = Order(
                 idorder=uuid.uuid4(),
                 iduser=iduser,
-                status="pending",
+                status="start",
                 date=datetime.today().date(),
                 totalprice=0.0
             )

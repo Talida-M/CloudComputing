@@ -153,6 +153,12 @@ class Book(db.Model):
         return book.to_dict() if book else None
 
     @classmethod
+    def get_books_by_ids(cls,idbooks):
+        books = Book.query.filter(Book.idbook.in_(idbooks)).all()
+        if books is not None:
+            return books
+
+    @classmethod
     def get_book_by_name(cls, name):
         books = Book.query.filter_by(name=name).all()
         if books is not None:

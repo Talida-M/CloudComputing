@@ -3,7 +3,7 @@ from forms import AuthorAddForm, AuthorViewForm, AuthorDeleteForm,AuthorViewAllF
 from flask import Flask, render_template, redirect, url_for
 from flask_restful import Api
 import os
-from resources import AuthorsAPI, DelAuthorApi, BookAPI, DelBookApi, AuthorAPI, BooksAPI, BookByiD
+from resources import AuthorsAPI, DelAuthorApi, BookAPI, DelBookApi, AuthorAPI, BooksAPI, BookByiD, BookByiDs
 # from authorModel import db, Author
 # from bookModel import db, Book
 from models import db,Author,Book
@@ -134,6 +134,7 @@ api.add_resource(BooksAPI, '/api/book/')
 api.add_resource(BookAPI, '/api/book/<string:name>')
 api.add_resource(DelBookApi, '/api/book/<string:idbook>')
 api.add_resource(BookByiD, '/api/book/byid/<string:idbook>')
+api.add_resource(BookByiDs,'/api/book/byids')
 # api.add_resource(UpdateBookApi, '/api/book/<string:idbook>/<string:stockstatus>')
 
 

@@ -7,7 +7,7 @@ from forms import OrderAddForm, UserOrdersViewForm, OrderViewForm, UserOrderDeta
     OrdeQuantityUpdateForm
 from models import db, Order_Detail,Order
 from resources import OrderCreateGetAPI, OrderAddingBookOrderAPI, OrderDecrementBookOrderAPI, OrderRemoveBookOrderAPI, \
-    SendOrderGetAPI
+    SendOrderGetAPI, PendingOrderAPI, OrdersGetAllAPI
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 DB_HOST = os.getenv('DB_HOST', 'postgres')
@@ -30,9 +30,8 @@ api.add_resource(SendOrderGetAPI, '/api/order/send/<string:iduser>')
 api.add_resource(OrderAddingBookOrderAPI, '/api/order/add/<string:bookid>/<string:orderid>/<float:price>')
 api.add_resource(OrderDecrementBookOrderAPI, '/api/order/decrem/<string:bookid>/<string:orderid>')
 api.add_resource(OrderRemoveBookOrderAPI, '/api/order/remove/<string:idbook>/<string:idorder>')
-
-
-
+api.add_resource(PendingOrderAPI,'/api/order/pending/<string:iduser>')
+api.add_resource(OrdersGetAllAPI,'/api/order/allorders/<string:iduser>')
 
 # @app.route('/')
 # def index():

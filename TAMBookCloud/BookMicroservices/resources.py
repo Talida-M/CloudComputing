@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 from models import Author,Book
 # from authorModel import Author
 # from bookModel import Book
-
+from flask import request, jsonify
 parser = reqparse.RequestParser()
 parser.add_argument('firstname', required=False, help="Author name")
 parser.add_argument('lastname', required=False, help="Author name")
@@ -57,6 +57,20 @@ class BookByiD(Resource):
         if book:
             return book, 200
         return {'message': 'Book not found'}, 404
+
+class BookByiDs(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            idbooks = data.get('idbooks', [])
+            if not idbooks:
+                return jsonify({'error': 'No book IDs provided'}), 400
+            books = Book.get_books_by_ids(idbooks)
+            if not books:
+                return jsonify({'error': 'No books found for the given IDs'}), 404
+            return jsonify([book.to_dict() for book in books])
+        except Exception as e:
+            return jsonify({'error': f'Failed to fetch books: {str(e)}'}), 500
 
 
 class BooksAPI(Resource):
