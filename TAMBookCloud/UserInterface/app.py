@@ -5,6 +5,7 @@ import jwt
 bookMicroservUrl = 'http://book-microservices:8000'  # Added http:// to the URL
 reviewMicroservUrl = 'http://review-microservices:8000'
 userMicroservUrl = 'http://user-microservices:8000'
+orderApiMicroservUrl = 'http://order-microservice-api:8000'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "SECRET_KEY"
@@ -96,7 +97,7 @@ def login_required(f):
     wrapper.__name__ = f.__name__
     return wrapper
 
-@app.route('/books')
+@app.route('/books') #este pentru acel dropdown cand cauti o carte dupa nume
 @login_required
 def books():
     try:
@@ -111,9 +112,33 @@ def books():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/m')
+@app.route('/m') #afiseaza toate cartile existente
 @login_required
 def home():
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
+    try:
+        payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+        iduser = payload.get('iduser')  # Extract user_id from the payload
+
+        response1 = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}')
+
+        if response1.status_code == 200:
+            try:
+                # Try to parse JSON response
+                data = response1.json()
+                if 'idorder' in data:
+                    flash(data['idorder'], "success")
+                else:
+                    flash('No idorder found in response.', "error")
+            except ValueError as e:
+                # Handle JSON parsing error
+                flash('Failed to parse JSON response from Order Microservice.', "error")
+        else:
+            flash(f'Error: {response1.status_code} - {response1.text}', "error")
+    except jwt.InvalidTokenError:
+        return redirect(url_for('login'))
     try:
         # Make a GET request to fetch books
         response = requests.get(f'{bookMicroservUrl}/api/book/')
@@ -125,9 +150,22 @@ def home():
         # Handle any exceptions that occur during the request
         return jsonify({'error': str(e)}), 500
 
-@app.route('/search-book', methods=['GET', 'POST'])
+@app.route('/search-book', methods=['GET', 'POST']) #cauta o carte dupa nume si te lasa sa vezi si reviewurile cartii plus ai camp de adaugare review in html
 @login_required
 def search_book():
+    global idorder
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
+    try:
+        payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+        iduser = payload.get('iduser')  # Extract user_id from the payload
+        response1 = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}')
+        if response1.status_code == 200:
+            idorder = response1.json().get('idorder')
+    except jwt.InvalidTokenError:
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         book_name = request.form.get('book_name')
         book_id = request.form.get('book_id')
@@ -137,7 +175,7 @@ def search_book():
         try:
                 # Call the BookMicroservice to get details of the selected book
             response = requests.get(f'{bookMicroservUrl}/api/book/byid/{book_id}')
-            if response.status_code == 200:
+            if response.status_code == 200: #daca exista cartea cu acel id
                 book_details = response.json()
 
                 review_response = requests.get(f'{reviewMicroservUrl}/api/review/{book_id}')
@@ -146,7 +184,7 @@ def search_book():
                     reviews = review_response.json()
 
 
-                return render_template('search_book.html', book_details=book_details,book_name=book_name,reviews=reviews)
+                return render_template('search_book.html', book_details=book_details,book_name=book_name,reviews=reviews,idorder=idorder)
             else:
                 return render_template('register.html')
                 # return render_template('search_book.html', error="Book not found.",book_name=book_name)
@@ -157,7 +195,7 @@ def search_book():
     return render_template('search_book.html',book_name="")
 
 
-@app.route('/submit-review', methods=['POST'])
+@app.route('/submit-review', methods=['POST'])#pentru a trimite review-ul creat
 @login_required
 def submit_review():
     token = session.get('token')
@@ -187,12 +225,133 @@ def submit_review():
         response = requests.post(f'{reviewMicroservUrl}/api/reviews', json=review_payload)
         if response.status_code == 200:
             flash("Review submitted successfully!", "success")
-            return redirect(url_for('search_book'))
+            return redirect(url_for('search_book')) #pastrati asa
         else:
             flash("Failed to submit the review.", "error")
 
     except requests.exceptions.RequestException as e:
         flash("Caution.", "error")
+
+@app.route('/add-to-order', methods=['POST'])
+@login_required
+def add_to_order():
+    token = session.get('token')
+    if not token:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+        iduser = payload.get('iduser')
+    except jwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token'}), 401
+
+    data = request.json
+    idbook = data.get('idbook')
+    idorder = data.get('idorder')
+    price = data.get('price')
+
+    if not all([idbook, idorder, price]):
+        return jsonify({'error': 'Missing required parameters'}), 400
+
+    # Forward the request to the OrderMicroservice
+    try:
+        response = requests.post(
+            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}'
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'message': 'Book added to order successfully'}), 200
+
+
+
+@app.route('/order',methods=['POST','GET'])
+@login_required
+def my_order():
+    # Render the order.html template
+    global order
+    token = session.get('token')
+    if not token:
+        return redirect(url_for('login'))
+    try:
+        payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+        iduser = payload.get('iduser')  # Extract user_id from the payload
+        response = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}')
+        if response.status_code == 200:
+            order = response.json()
+            return render_template('order.html', order=order)
+    except jwt.InvalidTokenError:
+        return redirect(url_for('login'))
+    return render_template('order.html',order=order)
+
+
+
+
+@app.route('/add-book', methods=['POST'])
+@login_required
+def add_book_to_order():
+    data = request.json
+    idbook = data.get('idbook')
+    idorder = data.get('idorder')
+    price = data.get('price')
+
+    # if response.status_code == 200:
+    #     flash("Book added to order successfully.", "success")
+    #
+    # else:
+    #     flash("Failed to add book to order.", "error")
+    try:
+        response = requests.post(
+            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}'
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'message': 'Book added to order successfully'}), 200
+
+
+@app.route('/remove-book', methods=['DELETE'])
+@login_required
+def remove_book_from_order():
+    data = request.json
+    idbook = data.get('idbook')
+    idorder = data.get('idorder')
+    try:
+        response = requests.delete(
+            f'{orderApiMicroservUrl}/api/order/remove/{idbook}/{idorder}'
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'message': 'Book added to order successfully'}), 200
+
+
+@app.route('/decrem-book', methods=['DELETE'])
+@login_required
+def decrement_book_from_order():
+    data = request.json
+    idbook = data.get('idbook')
+    idorder = data.get('idorder')
+    try:
+        response = requests.delete(
+            f'{orderApiMicroservUrl}/api/order/decrem/{idbook}/{idorder}'
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'message': 'Book added to order successfully'}), 200
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

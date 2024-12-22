@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Order Details</h1>
+
+    <!-- Displaying order details -->
+    <div class="order-summary">
+        <h3>Order ID: {{ order.idorder }}</h3>
+        <p>Status: {{ order.status }}</p>
+        <p>Date: {{ order.date }}</p>
+        <p>Total Price: ${{ order.totalprice }}</p>
+    </div>
+
+    <h2>Books in Order</h2>
+    <ul class="order-books">
+        {% for book in order.order_orderdetails %}
+        <li class="book-item" data-idbook="{{ book.idbook }}" data-idorder="{{ order.idorder }}">
+            <p>{{ book.idbook }} ({{ book.price }})</p>
+            <p>Quantity: {{ book.cantity }}</p>
+
+            <!-- Buttons for adding/removing/updating the order -->
+            <button class="add-book-btn" data-idbook="{{ book.idbook }}" data-idorder="{{ order.idorder }}" data-price="{{ book.price }}">Add One More</button>
+            <button class="remove-book-btn" data-idbook="{{ book.idbook }}" data-idorder="{{ order.idorder }}">Remove from Order</button>
+            <button class="decrement-book-btn" data-idbook="{{ book.idbook }}" data-idorder="{{ order.idorder }}">Decrease Quantity</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Include the JavaScript that handles the button clicks and AJAX calls -->
+    <script>
+    $(document).ready(function() {
+        // Event listener for adding a book to the order
+        $('.add-book-btn').on('click', function(event) {
+            event.preventDefault();
+            const idbook = $(this).data('idbook');
+            const idorder = $(this).data('idorder');
+            const price = $(this).data('price');
+            console.log(`Adding book: ${idbook}, order: ${idorder}, price: ${price}`);
+
+            fetch('/add-book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ idbook, idorder, price }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = '/order';
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+
+        // Event listener for removing a book from the order
+        $('.remove-book-btn').on('click', function(event) {
+            event.preventDefault();
+            const idbook = $(this).data('idbook');
+            const idorder = $(this).data('idorder');
+            console.log(`Removing book: ${idbook}, order: ${idorder}`);
+
+            fetch('/remove-book', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ idbook, idorder }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = '/order';
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+
+
+        $('.decrement-book-btn').on('click', function(event) {
+            event.preventDefault();
+            const idbook = $(this).data('idbook');
+            const idorder = $(this).data('idorder');
+            console.log(`Decrementing book: ${idbook}, order: ${idorder}`);
+
+            fetch('/decrem-book', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ idbook, idorder }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = '/order';
+            })
+            .catch(error => {
+               console.error('There was a problem with the fetch operation:', error);
+            });
+        });
+    });
+    </script>
+</body>
+</html>

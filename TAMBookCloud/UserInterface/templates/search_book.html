@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <title>Search Book</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
@@ -145,6 +146,37 @@
                 $bookId.val(selectedBookId);
                 $dropdown.hide();
             });
+
+            $('#add-to-order-btn').on('click', function(event) {
+            event.preventDefault(); // Prevent default button action
+            const idbook = $(this).data('idbook');
+            console.log(idbook)
+            const idorder = $(this).data('idorder');
+            console.log(idorder)
+            const price = $(this).data('price');
+            console.log(price)
+            // Send a POST request to /add-to-order
+            fetch('/add-to-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ idbook, idorder, price }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = '/order';
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+            });
         });
     </script>
 
@@ -164,6 +196,12 @@
         <p><strong>Year:</strong> {{ book_details.year }}</p>
         <p><strong>Stock Status:</strong> {{ book_details.stockstatus }}</p>
         <p><strong>Price:</strong> ${{ book_details.price }}</p>
+        <button class="btn btn-primary" id="add-to-order-btn"
+        data-idbook="{{ book_details.idbook }}"
+        data-idorder="{{ idorder }}"
+        data-price="{{ book_details.price }}">
+        <i class="fas fa-plus"></i> ORDER
+        </button>
     </div>
 
     <h3>Submit Review</h3>

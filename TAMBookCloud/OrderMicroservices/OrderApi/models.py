@@ -40,7 +40,7 @@ class Order(db.Model):
 
     @classmethod
     def sent_order(self,iduser):
-        order = Order.query.filter_by(iduser=iduser).first()
+        order = Order.query.filter_by(iduser=iduser,status="pending").order_by(Order.date.desc()).first()
         if order is None:
             return "No order found for this user"
         order.status = "sent"
