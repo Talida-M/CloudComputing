@@ -8,12 +8,22 @@ from resources import AuthorsAPI, DelAuthorApi, BookAPI, DelBookApi, AuthorAPI, 
 # from bookModel import db, Book
 from models import db,Author,Book
 
+from prometheus_client import make_wsgi_app
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
 DB_HOST = os.getenv('DB_HOST', 'bookdb')
 DB_USERNAME = os.getenv('DB_USERNAME', 'postgres')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
 DB_NAME = os.getenv('DB_NAME', 'bookdb')
 
 app = Flask(__name__)
+
+
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+    '/metrics': make_wsgi_app()
+})
+
+
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 app.config['SECRET_KEY'] = "SECRET_KEY"

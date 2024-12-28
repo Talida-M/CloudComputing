@@ -24,3 +24,4 @@ WTForms==3.2.1
 Flask-Bcrypt
 Flask-Jwt-Extended
 email-validator
+prometheus_client==0.21.1

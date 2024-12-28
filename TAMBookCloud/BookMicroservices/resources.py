@@ -2,6 +2,24 @@ from flask_restful import Resource, reqparse
 from models import Author,Book
 # from authorModel import Author
 # from bookModel import Book
+from prometheus_client import Counter, Histogram
+import time
+
+
+import logging
+from logging.handlers import SysLogHandler
+syslog_host = 'syslog-ng'
+syslog_port = 514
+logger = logging.getLogger('book_microservice')
+logger.setLevel(logging.INFO)
+
+
+syslog_handler = SysLogHandler(address=(syslog_host, syslog_port))
+formatter = logging.Formatter('%(asctime)s %(name)s: %(message)s')
+syslog_handler.setFormatter(formatter)
+logger.addHandler(syslog_handler)
+
+
 from flask import request, jsonify
 parser = reqparse.RequestParser()
 parser.add_argument('firstname', required=False, help="Author name")
@@ -17,6 +35,16 @@ parser.add_argument('publisher', required=True, help="Book publisher cannot be b
 parser.add_argument('category', required=True, help="Book category cannot be blank")
 parser.add_argument('idauthor', required=True, help="Book author id must be a string")
 
+REQUEST_COUNT = Counter(
+    'book_microservice_request_count',
+    'Request Count for Book Microservice',
+    ['method', 'endpoint', 'http_status']
+)
+REQUEST_LATENCY = Histogram(
+    'book_microservice_request_latency_seconds',
+    'Request Latency for Book Microservice',
+    ['method', 'endpoint']
+)
 
 class DelAuthorApi(Resource):#by id
     def delete(self, idauthor):
@@ -75,7 +103,12 @@ class BookByiDs(Resource):
 
 class BooksAPI(Resource):
     def get(self):
+        start_time = time.time()
+        endpoint = '/api/book/'
         books = Book.get_all_books()
+        REQUEST_COUNT.labels('GET', endpoint, 200).inc()
+        logger.info(f"Successfully fetched {len(books)} books")
+        REQUEST_LATENCY.labels('GET', endpoint).observe(time.time() - start_time)
         return [book.to_dict() for book in books], 200
 
     def update(self, idbook, stockstatus):

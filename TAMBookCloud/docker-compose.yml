@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+
+  syslog-ng:
+    image: balabit/syslog-ng:latest
+    container_name: syslog-ng
+    networks:
+      - my-network
+    ports:
+      - "514:514/udp"
+      - "514:514/tcp"
+    volumes:
+      - ./syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf
+      - ./logs:/var/log
+
+
   postgres:
     image: postgres
     container_name: postgresTAM
@@ -125,6 +139,7 @@ services:
     ports:
       - "5004:8000"
     environment:
+
       DB_HOST: bookdb
       DB_NAME: bookdb
       DB_USERNAME: postgres
@@ -132,12 +147,25 @@ services:
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
       RABBITMQ_HOST: rabbitmq
+      SYSLOG_HOST: syslog-ng
+#      PYTHONUNBUFFERED: 1
     depends_on:
       - bookdb
 #      - redis
+      - syslog-ng
       - rabbitmq
+      - prometheus
     restart: always
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    networks:
+      - my-network
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
 
   user-interface:
     build:
