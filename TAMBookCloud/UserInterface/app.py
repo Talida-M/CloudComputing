@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, session, redirect, url_for, request, render_template, flash
+from flask import Flask, jsonify, session, redirect, url_for, request, render_template, flash,make_response
 import requests
 import jwt
-
+import uuid
 bookMicroservUrl = 'http://book-microservices:8000'  # Added http:// to the URL
 reviewMicroservUrl = 'http://review-microservices:8000'
 userMicroservUrl = 'http://user-microservices:8000'
@@ -61,7 +61,15 @@ def login():
                 print(response.json().get('access_token'))
                 # Extract access token and save it in session
                 session['token'] = response.json().get('access_token')
-                return redirect(url_for('home'))  # Redirect to home page
+
+                #creare trace_id
+                trace_id = str(uuid.uuid4())
+                response1 = make_response(redirect(url_for('home')))
+                response1.set_cookie('trace_id', trace_id, httponly=True)
+
+                return response1  # Return the response with the cookie set
+
+                # return redirect(url_for('home'))  # Redirect to home page
             else:
                 return jsonify(response.json()), response.status_code
         except requests.exceptions.RequestException as e:
@@ -116,11 +124,17 @@ def books():
 @login_required
 def home():
     token = session.get('token')
+
+    trace_id = request.cookies.get('trace_id')
+
+
     if not token:
         return redirect(url_for('login'))
     try:
         payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
         iduser = payload.get('iduser')  # Extract user_id from the payload
+        headers = {'X-Trace-ID': trace_id,'Id-User': iduser}
+        #stop token
 
         response1 = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}')
 
@@ -141,7 +155,7 @@ def home():
         return redirect(url_for('login'))
     try:
         # Make a GET request to fetch books
-        response = requests.get(f'{bookMicroservUrl}/api/book/')
+        response = requests.get(f'{bookMicroservUrl}/api/book/',data=None,headers=headers)
         response.raise_for_status()  # Raise an exception for HTTP errors
         books = response.json()  # Parse the JSON response
         return render_template('booksView.html', books=books)

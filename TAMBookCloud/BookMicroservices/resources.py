@@ -4,7 +4,7 @@ from models import Author,Book
 # from bookModel import Book
 from prometheus_client import Counter, Histogram
 import time
-
+from datetime import datetime
 
 import logging
 from logging.handlers import SysLogHandler
@@ -15,7 +15,7 @@ logger.setLevel(logging.INFO)
 
 
 syslog_handler = SysLogHandler(address=(syslog_host, syslog_port))
-formatter = logging.Formatter('%(asctime)s %(name)s: %(message)s')
+formatter = logging.Formatter('%(asctime)s %(name)s [%(levelname)s]: %(message)s')
 syslog_handler.setFormatter(formatter)
 logger.addHandler(syslog_handler)
 
@@ -43,7 +43,8 @@ REQUEST_COUNT = Counter(
 REQUEST_LATENCY = Histogram(
     'book_microservice_request_latency_seconds',
     'Request Latency for Book Microservice',
-    ['method', 'endpoint']
+    ['method', 'endpoint','trace_id'],
+    buckets=[0.00001,0.05,0.1,0.25,0.5, 1.0, 2.0, 5.0, 10.0]
 )
 
 class DelAuthorApi(Resource):#by id
@@ -107,8 +108,24 @@ class BooksAPI(Resource):
         endpoint = '/api/book/'
         books = Book.get_all_books()
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
-        logger.info(f"Successfully fetched {len(books)} books")
-        REQUEST_LATENCY.labels('GET', endpoint).observe(time.time() - start_time)
+
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if books:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id":user_id,
+                "trace_id": trace_id,
+                "message": f"Successfully fetched {len(books)} books"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No books available"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint,trace_id).observe(time.time() - start_time)
         return [book.to_dict() for book in books], 200
 
     def update(self, idbook, stockstatus):
