@@ -7,6 +7,21 @@ import os
 from sqlalchemy.dialects.mysql import DATETIME
 
 from models import Order_Detail,Order
+from prometheus_client import Counter, Histogram
+import time
+from datetime import datetime
+
+import logging
+from logging.handlers import SysLogHandler
+syslog_host = 'syslog-ng'
+syslog_port = 514
+logger = logging.getLogger('order_microservice')
+logger.setLevel(logging.INFO)
+
+syslog_handler = SysLogHandler(address=(syslog_host, syslog_port))
+formatter = logging.Formatter('%(asctime)s %(name)s [%(levelname)s]: %(message)s')
+syslog_handler.setFormatter(formatter)
+logger.addHandler(syslog_handler)
 
 parser = reqparse.RequestParser()
 parser.add_argument('idorder', required=True, help="Order id cannot be blank")
@@ -21,10 +36,42 @@ order_parser.add_argument('books', required=True, type=list, location='json',
                           help="Books list is required")  # Expect a list of books
 
 
+REQUEST_COUNT = Counter(
+    'order_microservice_request_count',
+    'Request Count for Order Microservice',
+    ['method', 'endpoint', 'http_status']
+)
+REQUEST_LATENCY = Histogram(
+    'order_microservice_request_latency_seconds',
+    'Request Latency for Order Microservice',
+    ['method', 'endpoint', 'trace_id'],
+    buckets=[0.00001,0.05,0.1,0.25,0.5, 1.0, 2.0, 5.0, 10.0]
+)
+
 class OrderCreateGetAPI(Resource):
     def post(self,iduser):
+        start_time = time.time()
+        endpoint = '/api/order/' + iduser
         order = Order.get_or_create_order(iduser)
-        return order,200
+        REQUEST_COUNT.labels('POST', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if order:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Order {order['idorder']} successfully added"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No order added"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+        return order, 200
 
 class OrderAddingBookOrderAPI(Resource):
     def post(self,bookid,orderid,price):
@@ -32,35 +79,159 @@ class OrderAddingBookOrderAPI(Resource):
         # bookid = data['idbook']
         # orderid = data['idorder']
         # price = data['price']
+        start_time = time.time()
+        endpoint = '/api/order/add/' + bookid + orderid + price
         order = Order.add_book_to_order(bookid,orderid,price)
-        return order,200
+        REQUEST_COUNT.labels('POST', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if order:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Book {bookid} successfully added in order {orderid}"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No book added to order"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+
+        return order, 200
 
 class OrderDecrementBookOrderAPI(Resource):
     def delete(self,bookid,orderid): #or put?
         # data = request.get_json()
         # bookid = data['idbook']
         # orderid = data['idorder']
+        start_time = time.time()
+        endpoint = '/api/order/decrem/' + bookid + orderid
         order = Order.decrement_book_from_order(bookid,orderid)
+        REQUEST_COUNT.labels('DELETE', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if order:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Book {bookid} successfully deleted from order {orderid}"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No book was deleted"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
         return order,200
 
 class OrderRemoveBookOrderAPI(Resource):
     def delete(self, idbook,idorder):
+        start_time = time.time()
+        endpoint = '/api/order/' + idbook + idorder
         order = Order.remove_book_from_order(idbook,idorder)
-        return order,200
+        REQUEST_COUNT.labels('DELETE', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if order:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Book {idbook} removed successfully from order {idorder}"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No book removed"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+
+        return order, 200
 
 class SendOrderGetAPI(Resource):
     def put(self, iduser):
+        start_time = time.time()
+        endpoint = '/api/order/send/' + iduser
         order = Order.sent_order(iduser)
+        REQUEST_COUNT.labels('PUT', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if order:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Order successfully added"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No order update"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+
         return order, 200
 
 class PendingOrderAPI(Resource):
     def put(self, iduser):
+        start_time = time.time()
+        endpoint = '/api/order/pending/' + iduser
         order = Order.pending_order(iduser)
+        REQUEST_COUNT.labels('PUT', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if order:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Order status successfully updated"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No order status was update"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+
         return order, 200
 
 class OrdersGetAllAPI(Resource):
     def get(self, iduser):
+        start_time = time.time()
+        endpoint = '/api/order/allorders/' + iduser
         orders = Order.get_all_order(iduser)
+        REQUEST_COUNT.labels('GET', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if orders:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Orders retrieved successfully"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No order retrieved"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
         # return reviews, 200
         return [order.to_dict() for order in orders], 200
 

@@ -8,6 +8,8 @@ from forms import OrderAddForm, UserOrdersViewForm, OrderViewForm, UserOrderDeta
 from models import db, Order_Detail,Order
 from resources import OrderCreateGetAPI, OrderAddingBookOrderAPI, OrderDecrementBookOrderAPI, OrderRemoveBookOrderAPI, \
     SendOrderGetAPI, PendingOrderAPI, OrdersGetAllAPI
+from prometheus_client import make_wsgi_app
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 DB_HOST = os.getenv('DB_HOST', 'postgres')
@@ -16,6 +18,11 @@ DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
 DB_NAME = os.getenv('DB_NAME', 'db')
 
 app = Flask(__name__)
+
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+    '/metrics': make_wsgi_app()
+})
+
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 app.config['SECRET_KEY'] = "SECRET_KEY"
