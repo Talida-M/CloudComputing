@@ -15,7 +15,7 @@ import logging
 from logging.handlers import SysLogHandler
 syslog_host = 'syslog-ng'
 syslog_port = 514
-logger = logging.getLogger('order_microservice')
+logger = logging.getLogger('order-microservice-api')
 logger.setLevel(logging.INFO)
 
 syslog_handler = SysLogHandler(address=(syslog_host, syslog_port))
