@@ -155,11 +155,17 @@
             console.log(idorder)
             const price = $(this).data('price');
             console.log(price)
+            const trace_id = $(this).data('trace_id');
+            console.log(trace_id)
+            const iduser = $(this).data('iduser');
+            console.log(iduser)
             // Send a POST request to /add-to-order
             fetch('/add-to-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-Trace-ID': trace_id || 'N/A',
+                    'Id-User': iduser,
                 },
                 body: JSON.stringify({ idbook, idorder, price }),
             })

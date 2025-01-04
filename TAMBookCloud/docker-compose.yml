@@ -223,7 +223,7 @@ services:
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
       RABBITMQ_HOST: rabbitmq
-      SYSlOG_HOST: syslog-ng
+      SYSLOG_HOST: syslog-ng
     depends_on:
       - postgres
 #      - redis

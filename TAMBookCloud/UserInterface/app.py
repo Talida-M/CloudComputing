@@ -136,7 +136,7 @@ def home():
         headers = {'X-Trace-ID': trace_id,'Id-User': iduser}
         #stop token
 
-        response1 = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}')
+        response1 = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}',data=None,headers=headers)
 
         if response1.status_code == 200:
             try:
@@ -168,13 +168,15 @@ def home():
 @login_required
 def search_book():
     global idorder
+    trace_id = request.cookies.get('trace_id')
     token = session.get('token')
     if not token:
         return redirect(url_for('login'))
     try:
         payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
         iduser = payload.get('iduser')  # Extract user_id from the payload
-        response1 = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}')
+        headers = {'X-Trace-ID': trace_id}
+        response1 = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}',data=None,headers=headers)
         if response1.status_code == 200:
             idorder = response1.json().get('idorder')
     except jwt.InvalidTokenError:
@@ -198,7 +200,7 @@ def search_book():
                     reviews = review_response.json()
 
 
-                return render_template('search_book.html', book_details=book_details,book_name=book_name,reviews=reviews,idorder=idorder)
+                return render_template('search_book.html', book_details=book_details,book_name=book_name,reviews=reviews,idorder=idorder,iduser=iduser,trace_id=trace_id)
             else:
                 return render_template('register.html')
                 # return render_template('search_book.html', error="Book not found.",book_name=book_name)
@@ -269,6 +271,8 @@ def add_to_order():
 
     # Forward the request to the OrderMicroservice
     try:
+        trace_id = request.cookies.get('trace_id')
+        headers = {'X-Trace-ID': trace_id, 'Id-User': iduser}
         response = requests.post(
             f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}'
         )
@@ -285,13 +289,15 @@ def add_to_order():
 def my_order():
     # Render the order.html template
     global order
+    trace_id = request.cookies.get('trace_id')
     token = session.get('token')
     if not token:
         return redirect(url_for('login'))
     try:
         payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
-        iduser = payload.get('iduser')  # Extract user_id from the payload
-        response = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}')
+        iduser = payload.get('iduser')
+        headers = {'X-Trace-ID': trace_id}
+        response = requests.post(f'{orderApiMicroservUrl}/api/order/{iduser}',data=None,headers=headers)
         if response.status_code == 200:
             order = response.json()
             return render_template('order.html', order=order)
@@ -305,6 +311,10 @@ def my_order():
 @app.route('/add-book', methods=['POST'])
 @login_required
 def add_book_to_order():
+    token = session.get('token')
+    payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+    iduser = payload.get('iduser')
+
     data = request.json
     idbook = data.get('idbook')
     idorder = data.get('idorder')
@@ -316,8 +326,10 @@ def add_book_to_order():
     # else:
     #     flash("Failed to add book to order.", "error")
     try:
+        trace_id = request.cookies.get('trace_id')
+        headers = {'X-Trace-ID': trace_id, 'Id-User': iduser}
         response = requests.post(
-            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}'
+            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}',data = None, headers = headers
         )
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
@@ -329,12 +341,18 @@ def add_book_to_order():
 @app.route('/remove-book', methods=['DELETE'])
 @login_required
 def remove_book_from_order():
+    token = session.get('token')
+    payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+    iduser = payload.get('iduser')
+
     data = request.json
     idbook = data.get('idbook')
     idorder = data.get('idorder')
     try:
+        trace_id = request.cookies.get('trace_id')
+        headers = {'X-Trace-ID': trace_id, 'Id-User': iduser}
         response = requests.delete(
-            f'{orderApiMicroservUrl}/api/order/remove/{idbook}/{idorder}'
+            f'{orderApiMicroservUrl}/api/order/remove/{idbook}/{idorder}',data = None, headers = headers
         )
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
@@ -346,12 +364,18 @@ def remove_book_from_order():
 @app.route('/decrem-book', methods=['DELETE'])
 @login_required
 def decrement_book_from_order():
+    token = session.get('token')
+    payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
+    iduser = payload.get('iduser')
+
     data = request.json
     idbook = data.get('idbook')
     idorder = data.get('idorder')
     try:
+        trace_id = request.cookies.get('trace_id')
+        headers = {'X-Trace-ID': trace_id, 'Id-User': iduser}
         response = requests.delete(
-            f'{orderApiMicroservUrl}/api/order/decrem/{idbook}/{idorder}'
+            f'{orderApiMicroservUrl}/api/order/decrem/{idbook}/{idorder}',data = None, headers = headers
         )
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
@@ -364,17 +388,18 @@ def decrement_book_from_order():
 @app.route('/sent',methods=['PUT'])
 @login_required
 def sent_order(): #when click
-
+    trace_id = request.cookies.get('trace_id')
     token = session.get('token')
     if not token:
         return redirect(url_for('login'))
     try:
         payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
         iduser = payload.get('iduser')  # Extract user_id from the payload
-        response = requests.put(f'{orderApiMicroservUrl}/api/order/pending/{iduser}')
+        headers = {'X-Trace-ID': trace_id}
+        response = requests.put(f'{orderApiMicroservUrl}/api/order/pending/{iduser}',data = None, headers = headers)
         if response.status_code == 200:
             order = response.json()
-            requests.put(f'{orderApiMicroservUrl}/api/order/send/{iduser}')
+            requests.put(f'{orderApiMicroservUrl}/api/order/send/{iduser}',data = None, headers = headers)
             return {"message": "Order sent successfully"}, 200  # Return a JSON response
         else:
             return {"error": "Failed to update order status"}, response.status_code
@@ -389,14 +414,15 @@ def sent_order(): #when click
 @login_required
 def all_pending_success_orders():
     global orders
+    trace_id = request.cookies.get('trace_id')
     token = session.get('token')
     if not token:
         return redirect(url_for('login'))
     try:
         payload = jwt.decode(token, '12345678910', algorithms=['HS256'])
         iduser = payload.get('iduser')  # Extract user_id from the payload
-
-        response = requests.get(f'{orderApiMicroservUrl}/api/order/allorders/{iduser}')
+        headers = {'X-Trace-ID': trace_id}
+        response = requests.get(f'{orderApiMicroservUrl}/api/order/allorders/{iduser}',data = None, headers = headers)
 
         if response.status_code == 200:
             orders = response.json()
