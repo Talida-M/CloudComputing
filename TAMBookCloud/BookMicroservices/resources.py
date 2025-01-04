@@ -54,21 +54,80 @@ class DelAuthorApi(Resource):#by id
 
 class AuthorsAPI(Resource):#by names
     def get(self):
+        start_time = time.time()
+        endpoint = '/api/author/'
         authors = Author.get_all_authors()
+
+        REQUEST_COUNT.labels('GET', endpoint, 200).inc()
+
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if authors:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Successfully fetched {len(authors)} authors"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No authors available"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
         return [author.to_dict() for author in authors], 200
 
     def post(self):
+        start_time = time.time()
+        endpoint = '/api/author/'
         args = parser.parse_args()
         author = {
             'firstname': args['firstname'],
             'lastname': args['lastname'],
         }
         author_done = Author.add_author(author)
+
+        REQUEST_COUNT.labels('POST', endpoint, 200).inc()
+
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Successfully created {author_done['idauthor']} author"
+        })
+        REQUEST_LATENCY.labels('POST', endpoint, trace_id).observe(time.time() - start_time)
         return {'authorid':author_done['idauthor']}, 201
 
 class AuthorAPI(Resource):#by names
     def get(self,lastname,firstname):
+        start_time = time.time()
+        endpoint = '/api/author/'
         authors = Author.get_author_by_name( lastname,firstname)
+
+        REQUEST_COUNT.labels('GET', endpoint, 200).inc()
+
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if authors:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Successfully fetched {len(authors)} authors"
+            })
+        else:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": "No authors available"
+            })
+        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+
         return [author.to_dict() for author in authors], 200
 
 class BookAPI(Resource):#by names
@@ -129,10 +188,32 @@ class BooksAPI(Resource):
         return [book.to_dict() for book in books], 200
 
     def update(self, idbook, stockstatus):
+        start_time = time.time()
+        endpoint = '/api/book/'
         review = Book.update_book_stock(idbook, stockstatus)
+
+        REQUEST_COUNT.labels('PUT', endpoint, 200).inc()
+
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if review:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Successfully update {idbook} book"
+            })
+
+        REQUEST_LATENCY.labels('PUT', endpoint, trace_id).observe(time.time() - start_time)
+
+
         return review, 200
 
     def post(self):
+
+        start_time = time.time()
+        endpoint = '/api/book/'
+
         args = parser.parse_args()
         book = {
             'name': args['name'],
@@ -145,6 +226,21 @@ class BooksAPI(Resource):
             'idauthor': args['idauthor']
         }
         book_done = Book.add_book(book)
+
+        REQUEST_COUNT.labels('POST', endpoint, 200).inc()
+
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
+        if book_done:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Successfully created '{book_done['idbook']}' book"
+            })
+
+        REQUEST_LATENCY.labels('POST', endpoint, trace_id).observe(time.time() - start_time)
+
         return {'idbook':book_done['idbook']}, 201
 
 class DelBookApi(Resource):  # by id
