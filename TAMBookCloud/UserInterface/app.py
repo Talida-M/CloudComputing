@@ -273,10 +273,16 @@ def add_to_order():
             f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}'
         )
         response.raise_for_status()
+        # creare trace_id
+        trace_id = str(uuid.uuid4())
+        response1 = make_response(jsonify({'message': 'Book added to order successfully'}), 200)
+        response1.set_cookie('trace_id', trace_id, httponly=True)
+
     except requests.exceptions.RequestException as e:
         return jsonify({'error': str(e)}), 500
 
-    return jsonify({'message': 'Book added to order successfully'}), 200
+    return response1
+    # return jsonify({'message': 'Book added to order successfully'}), 200
 
 
 
@@ -320,10 +326,14 @@ def add_book_to_order():
             f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}'
         )
         response.raise_for_status()
+        trace_id = str(uuid.uuid4())
+        response1 = make_response(jsonify({'message': 'Book added to order successfully'}), 200)
+        response1.set_cookie('trace_id', trace_id, httponly=True)
+
     except requests.exceptions.RequestException as e:
         return jsonify({'error': str(e)}), 500
-
-    return jsonify({'message': 'Book added to order successfully'}), 200
+    return  response1
+    # return jsonify({'message': 'Book added to order successfully'}), 200
 
 
 @app.route('/remove-book', methods=['DELETE'])
@@ -337,10 +347,14 @@ def remove_book_from_order():
             f'{orderApiMicroservUrl}/api/order/remove/{idbook}/{idorder}'
         )
         response.raise_for_status()
+        trace_id = str(uuid.uuid4())
+        response1 = make_response(jsonify({'message': 'Book added to order successfully'}), 200)
+        response1.set_cookie('trace_id', trace_id, httponly=True)
+
     except requests.exceptions.RequestException as e:
         return jsonify({'error': str(e)}), 500
-
-    return jsonify({'message': 'Book added to order successfully'}), 200
+    return  response1
+    # return jsonify({'message': 'Book added to order successfully'}), 200
 
 
 @app.route('/decrem-book', methods=['DELETE'])
@@ -354,10 +368,14 @@ def decrement_book_from_order():
             f'{orderApiMicroservUrl}/api/order/decrem/{idbook}/{idorder}'
         )
         response.raise_for_status()
+        trace_id = str(uuid.uuid4())
+        response1 = make_response(jsonify({'message': 'Book added to order successfully'}), 200)
+        response1.set_cookie('trace_id', trace_id, httponly=True)
+
     except requests.exceptions.RequestException as e:
         return jsonify({'error': str(e)}), 500
-
-    return jsonify({'message': 'Book added to order successfully'}), 200
+    return response1
+    # return jsonify({'message': 'Book added to order successfully'}), 200
 
 
 ########new it will be on click sent button
@@ -375,7 +393,11 @@ def sent_order(): #when click
         if response.status_code == 200:
             order = response.json()
             requests.put(f'{orderApiMicroservUrl}/api/order/send/{iduser}')
-            return {"message": "Order sent successfully"}, 200  # Return a JSON response
+            trace_id = str(uuid.uuid4())
+            response1 = make_response({"message": "Order sent successfully"}, 200 )
+            response1.set_cookie('trace_id', trace_id, httponly=True)
+            return response1
+            # return {"message": "Order sent successfully"}, 200  # Return a JSON response
         else:
             return {"error": "Failed to update order status"}, response.status_code
     except jwt.InvalidTokenError:
@@ -400,10 +422,18 @@ def all_pending_success_orders():
 
         if response.status_code == 200:
             orders = response.json()
-            return render_template('allorders.html', orders=orders)
+            trace_id = str(uuid.uuid4())
+            response1 = make_response(render_template('allorders.html', orders=orders))
+            response1.set_cookie('trace_id', trace_id, httponly=True)
+            return response1
+            # return render_template('allorders.html', orders=orders)
     except jwt.InvalidTokenError:
         return redirect(url_for('login'))
-    return render_template('allorders.html', orders=orders)
+    trace_id = str(uuid.uuid4())
+    response1 = make_response(render_template('allorders.html', orders=orders))
+    response1.set_cookie('trace_id', trace_id, httponly=True)
+    return response1
+    # return render_template('allorders.html', orders=orders)
 
 # @app.route('/latest-orders', methods=['GET'])
 # @login_required
