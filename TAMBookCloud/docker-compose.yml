@@ -122,11 +122,14 @@ services:
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
       RABBITMQ_HOST: rabbitmq
+      SYSLOG_HOST: syslog-ng
     depends_on:
       - reviewdb
 #      - postgres
 #      - redis
       - rabbitmq
+      - syslog-ng
+      - prometheus
     restart: always
 
   book-microservices:

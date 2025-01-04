@@ -10,3 +10,7 @@ scrape_configs:
     metrics_path: '/metrics'
     static_configs:
       - targets: [ 'order-microservice-api:8000' ]
+  - job_name: 'review_microservice'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: [ 'review-microservices:8000' ]

@@ -4,6 +4,10 @@ from flask_restful import Api
 import os
 from resources import ReviewAPI, ReviewsAPI, DelReviewApi
 from reviewModel import db, Review
+
+from prometheus_client import make_wsgi_app
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
 # from rabbitmq import send_message_with_response
 import pika
 import json
@@ -13,6 +17,11 @@ DB_PASSWORD = os.getenv('DB_PASSWORD', 'my-secret-pw')
 DB_NAME = os.getenv('DB_NAME', 'reviewdb')
 
 app = Flask(__name__)
+
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+    '/metrics': make_wsgi_app()
+})
+
 book_exists_response = None
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
@@ -27,7 +36,6 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
-# @login
 @app.route('/review/add', methods=['GET', 'POST'])
 def add_review_route():
     form = ReviewAddForm()

@@ -195,7 +195,7 @@ def search_book():
             if response.status_code == 200: #daca exista cartea cu acel id
                 book_details = response.json()
 
-                review_response = requests.get(f'{reviewMicroservUrl}/api/review/{book_id}')
+                review_response = requests.get(f'{reviewMicroservUrl}/api/review/{book_id}',data=None,headers=headers1)
                 reviews = []
                 if review_response.status_code == 200:
                     reviews = review_response.json()
@@ -228,6 +228,7 @@ def submit_review():
     idbook = request.form.get('idbook')
     rating = request.form.get('rating')
     comment = request.form.get('comment')
+    trace_id = request.cookies.get('trace_id')
     if not idbook or not rating or not comment:
        flash("All fields are required.","error")
 
@@ -237,7 +238,8 @@ def submit_review():
             'iduser': iduser,
             'idbook': idbook,
             'rating': int(rating),
-            'comment': comment
+            'comment': comment,
+            'trace_id':trace_id # adaguaaat acuuuuum
         }
         response = requests.post(f'{reviewMicroservUrl}/api/reviews', json=review_payload)
         if response.status_code == 200:
