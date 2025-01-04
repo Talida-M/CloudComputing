@@ -189,8 +189,9 @@ def search_book():
             return render_template('search_book.html', error="Please select a book name.",book_name=book_name)
 
         try:
+            headers1 = {'X-Trace-ID': trace_id, 'Id-User': iduser}
                 # Call the BookMicroservice to get details of the selected book
-            response = requests.get(f'{bookMicroservUrl}/api/book/byid/{book_id}')
+            response = requests.get(f'{bookMicroservUrl}/api/book/byid/{book_id}',data=None,headers=headers1)
             if response.status_code == 200: #daca exista cartea cu acel id
                 book_details = response.json()
 

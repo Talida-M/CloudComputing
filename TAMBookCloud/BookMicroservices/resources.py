@@ -141,9 +141,27 @@ class BookAPI(Resource):#by names
 
 class BookByiD(Resource):
     def get(self,idbook):
+        start_time = time.time()
+        endpoint = f'/api/book/byid/{idbook}'
         book = Book.get_book_by_id(idbook)
+        REQUEST_COUNT.labels('GET', endpoint, 200).inc()
+        trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        user_id = request.headers.get('Id-User', 'N/A')
         if book:
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-id": user_id,
+                "trace_id": trace_id,
+                "message": f"Successfully find book with id {idbook}"
+            })
+            REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
             return book, 200
+        logger.info({
+            "date": datetime.today().date().isoformat(),
+            "user-id": user_id,
+            "trace_id": trace_id,
+            "message": "The book doesn't exist"
+        })
         return {'message': 'Book not found'}, 404
 
 class BookByiDs(Resource):
