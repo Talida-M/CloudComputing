@@ -62,21 +62,22 @@ class AuthorsAPI(Resource):#by names
 
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+
         if authors:
             logger.info({
                 "date": datetime.today().date().isoformat(),
-                "user-id": user_id,
-                "trace_id": trace_id,
+                "user-type": 'admin',
+                "trace_id": 'N/A',
                 "message": f"Successfully fetched {len(authors)} authors"
             })
         else:
             logger.info({
                 "date": datetime.today().date().isoformat(),
-                "user-id": user_id,
-                "trace_id": trace_id,
+                "user-type": 'admin',
+                "trace_id": 'N/A',
                 "message": "No authors available"
             })
-        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+        REQUEST_LATENCY.labels('GET', endpoint, 'N/A').observe(time.time() - start_time)
         return [author.to_dict() for author in authors], 200
 
     def post(self):
@@ -91,15 +92,13 @@ class AuthorsAPI(Resource):#by names
 
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
 
-        trace_id = request.headers.get('X-Trace-ID', 'N/A')
-        user_id = request.headers.get('Id-User', 'N/A')
         logger.info({
                 "date": datetime.today().date().isoformat(),
-                "user-id": user_id,
-                "trace_id": trace_id,
+                "user-type": 'admin',
+                "trace_id": 'N/A',
                 "message": f"Successfully created {author_done['idauthor']} author"
         })
-        REQUEST_LATENCY.labels('POST', endpoint, trace_id).observe(time.time() - start_time)
+        REQUEST_LATENCY.labels('POST', endpoint, 'N/A').observe(time.time() - start_time)
         return {'authorid':author_done['idauthor']}, 201
 
 class AuthorAPI(Resource):#by names
@@ -247,17 +246,16 @@ class BooksAPI(Resource):
 
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
 
-        trace_id = request.headers.get('X-Trace-ID', 'N/A')
-        user_id = request.headers.get('Id-User', 'N/A')
+
         if book_done:
             logger.info({
                 "date": datetime.today().date().isoformat(),
-                "user-id": user_id,
-                "trace_id": trace_id,
+                "user-type": 'admin',
+                "trace_id": 'N/A',
                 "message": f"Successfully created '{book_done['idbook']}' book"
             })
 
-        REQUEST_LATENCY.labels('POST', endpoint, trace_id).observe(time.time() - start_time)
+        REQUEST_LATENCY.labels('POST', endpoint, 'N/A').observe(time.time() - start_time)
 
         return {'idbook':book_done['idbook']}, 201
 
