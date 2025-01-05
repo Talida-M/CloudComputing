@@ -60,9 +60,6 @@ class AuthorsAPI(Resource):#by names
 
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
 
-        trace_id = request.headers.get('X-Trace-ID', 'N/A')
-        user_id = request.headers.get('Id-User', 'N/A')
-
         if authors:
             logger.info({
                 "date": datetime.today().date().isoformat(),
@@ -109,23 +106,23 @@ class AuthorAPI(Resource):#by names
 
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
 
-        trace_id = request.headers.get('X-Trace-ID', 'N/A')
-        user_id = request.headers.get('Id-User', 'N/A')
+        # trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        # user_id = request.headers.get('Id-User', 'N/A')
         if authors:
             logger.info({
                 "date": datetime.today().date().isoformat(),
-                "user-id": user_id,
-                "trace_id": trace_id,
+                "user-type": 'admin',
+                "trace_id": 'N/A',
                 "message": f"Successfully fetched {len(authors)} authors"
             })
         else:
             logger.info({
                 "date": datetime.today().date().isoformat(),
-                "user-id": user_id,
-                "trace_id": trace_id,
+                "user-type": 'admin',
+                "trace_id": 'N/A',
                 "message": "No authors available"
             })
-        REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
+        REQUEST_LATENCY.labels('GET', endpoint, 'N/A').observe(time.time() - start_time)
 
         return [author.to_dict() for author in authors], 200
 

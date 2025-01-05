@@ -7,6 +7,9 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import backref
 from wtforms.validators import email
 from flask import Flask, request, jsonify
+
+from rabbitmq import connect_rabbitmq, send_message_order
+
 db = SQLAlchemy()
 
 class Order(db.Model):
@@ -49,15 +52,18 @@ class Order(db.Model):
         order = Order.query.filter_by(iduser=iduser,status="pending").order_by(Order.date.desc()).first()
         #cand facem cu rabbitmq - nu mai e nevoie de order.status si db.session.commit
         # send_message(order)
-        # send_message_to_queue_order(order)
-        order.status = "success"
-        db.session.commit()
-        return order.to_dict()
+        order_data = {
+            "idorder": order.idorder,
+            "iduser": order.iduser,
+            "status": order.status,
+            "totalprice":order.totalprice,
+        }
 
-    # def send_message_to_queue_order(data):
-    #     channel = connect_rabbitmq()
-    #     send_message_order(channel, 'order_queue', data)
-    #     channel.close()
+        send_message_to_queue_order(order_data)
+
+        # order.status = "success" astea se fac on rabbit cand merge
+        # db.session.commit()
+        return order.to_dict()
 
     @classmethod
     def pending_order(self, iduser):
@@ -262,7 +268,10 @@ class Order_Detail(db.Model):
 
 
 
-
+def send_message_to_queue_order(data):
+    channel = connect_rabbitmq()
+    send_message_order(channel, 'order_queue', data)
+    channel.close()
 
 #########
     # @classmethod

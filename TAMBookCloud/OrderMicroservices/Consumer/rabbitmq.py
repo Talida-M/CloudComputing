@@ -29,17 +29,17 @@ def declare_queue(channel, queue_name='order_queue'):
     channel.queue_declare(queue=queue_name, durable=True)
 
 # Function to send a message to a queue
-def send_message(message,queue_name="order_queue",channel=connect_rabbitmq()):
-    message_json = json.dumps(message)
-    channel.basic_publish(
-        exchange='',
-        routing_key=queue_name,
-        body=message_json,
-        properties=pika.BasicProperties(
-            delivery_mode=2,  # Make the message persistent
-        )
-    )
-    print(f"Sent message to queue: {message}")
+# def send_message(message,queue_name="order_queue",channel=connect_rabbitmq()):
+#     message_json = json.dumps(message)
+#     channel.basic_publish(
+#         exchange='',
+#         routing_key=queue_name,
+#         body=message_json,
+#         properties=pika.BasicProperties(
+#             delivery_mode=2,  # Make the message persistent
+#         )
+#     )
+#     print(f"Sent message to queue: {message}")
 
 # Function to consume messages from a queue
 def consume_messages(channel=connect_rabbitmq(), queue_name='order_queue', callback=None):

@@ -4,6 +4,20 @@ import json
 import os
 from rabbitmq import consume_messages
 
+from datetime import datetime
+import logging
+from logging.handlers import SysLogHandler
+syslog_host = 'syslog-ng'
+syslog_port = 514
+logger = logging.getLogger('book_microservice')
+logger.setLevel(logging.INFO)
+
+
+syslog_handler = SysLogHandler(address=(syslog_host, syslog_port))
+formatter = logging.Formatter('%(asctime)s %(name)s [%(levelname)s]: %(message)s')
+syslog_handler.setFormatter(formatter)
+logger.addHandler(syslog_handler)
+
 # Environment variables for RabbitMQ and PostgreSQL connection
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 DB_HOST = os.getenv('DB_HOST', 'localhost')
@@ -22,39 +36,56 @@ def get_postgres_connection():
     return conn
 
 # Function to check if a book exists by ISBN
-def book_exists(isbn):
-    conn = get_postgres_connection()
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT 1 FROM books WHERE isbn = %s", (isbn,))
-            return cursor.fetchone() is not None
-    finally:
-        conn.close()
+# def book_exists(isbn):
+#     conn = get_postgres_connection()
+#     try:
+#         with conn.cursor() as cursor:
+#             cursor.execute("SELECT 1 FROM books WHERE isbn = %s", (isbn,))
+#             return cursor.fetchone() is not None
+#     finally:
+#         conn.close()
 
 # Function to add a book to the database
-def add_book_to_db(book_data):
+def update_order_status(order_data):
     conn = get_postgres_connection()
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO books (isbn, name, author, pages) VALUES (%s, %s, %s, %s)",
-                (book_data['isbn'], book_data['name'], book_data['author'], book_data['pages'])
+                """
+                UPDATE orders
+                SET status = %s
+                WHERE idorder = %s
+                """,
+                ("success", order_data['idorder'])
             )
             conn.commit()
+            cursor.execute(
+                """
+                SELECT status FROM orders WHERE idorder = %s
+                """,
+                (order_data['idorder'],)
+            )
+            updated_status = cursor.fetchone()[0]
+            logger.info({
+                "date": datetime.today().date().isoformat(),
+                "user-type": 'admin',
+                "trace_id": 'N/A',
+                "message": f"pentru {order_data['idorder']} status actualizat la {updated_status}"
+            })
     finally:
         conn.close()
-
+#"UPDATE orders SET status = 'success' WHERE orders.idorder = order_data['idorder']"
 # Callback function that will be triggered when a message is received from RabbitMQ
 def callback(ch, method, properties, body):
     print("Received the new order message")
-
     order_data = json.loads(body)
-    print(order_data)
-    # if not book_exists(book_data['isbn']):
-    #     print(f"Book with ISBN {book_data['isbn']} does not exist, adding to the database.")
-    #     # add_book_to_db(book_data)
-    # else:
-    #     print(f"Book with ISBN {book_data['isbn']} already exists, skipping insertion.")
+    logger.info({
+        "date": datetime.today().date().isoformat(),
+        "user-type": 'admin',
+        "trace_id": 'N/A',
+        "message": f"initial rabbitmq a primt statuuus {order_data['status']} pentru {order_data['idorder']}"
+    })
+    update_order_status(order_data)
 
     # Acknowledge the message to RabbitMQ (message has been processed)
     ch.basic_ack(delivery_tag=method.delivery_tag)
