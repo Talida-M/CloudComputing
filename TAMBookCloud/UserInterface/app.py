@@ -105,7 +105,7 @@ def login_required(f):
     wrapper.__name__ = f.__name__
     return wrapper
 
-@app.route('/books') #este pentru acel dropdown cand cauti o carte dupa nume
+@app.route('/books') # NU BARA MENIU este pentru acel dropdown cand cauti o carte dupa nume
 @login_required
 def books():
     try:
@@ -212,7 +212,7 @@ def search_book():
     return render_template('search_book.html',book_name="")
 
 
-@app.route('/submit-review', methods=['POST'])#pentru a trimite review-ul creat
+@app.route('/submit-review', methods=['POST'])# # NU BARA MENIU pentru a trimite review-ul creat
 @login_required
 def submit_review():
     token = session.get('token')
@@ -251,7 +251,7 @@ def submit_review():
     except requests.exceptions.RequestException as e:
         flash("Caution.", "error")
 
-@app.route('/add-to-order', methods=['POST'])
+@app.route('/add-to-order', methods=['POST']) ## NU BARA MENIU
 @login_required
 def add_to_order():
     token = session.get('token')
@@ -287,7 +287,7 @@ def add_to_order():
 
 
 
-@app.route('/order',methods=['POST','GET'])
+@app.route('/order',methods=['POST','GET'])## NU BARA MENIU
 @login_required
 def my_order():
     # Render the order.html template
@@ -311,7 +311,7 @@ def my_order():
 
 
 
-@app.route('/add-book', methods=['POST'])
+@app.route('/add-book', methods=['POST'])# NU BARA MENIU
 @login_required
 def add_book_to_order():
     token = session.get('token')
@@ -341,7 +341,7 @@ def add_book_to_order():
     return jsonify({'message': 'Book added to order successfully'}), 200
 
 
-@app.route('/remove-book', methods=['DELETE'])
+@app.route('/remove-book', methods=['DELETE'])# NU BARA MENIU
 @login_required
 def remove_book_from_order():
     token = session.get('token')
@@ -364,7 +364,7 @@ def remove_book_from_order():
     return jsonify({'message': 'Book added to order successfully'}), 200
 
 
-@app.route('/decrem-book', methods=['DELETE'])
+@app.route('/decrem-book', methods=['DELETE'])# NU BARA MENIU
 @login_required
 def decrement_book_from_order():
     token = session.get('token')
@@ -388,7 +388,7 @@ def decrement_book_from_order():
 
 
 ########new it will be on click sent button
-@app.route('/sent',methods=['PUT'])
+@app.route('/sent',methods=['PUT'])# NU BARA MENIU
 @login_required
 def sent_order(): #when click
     trace_id = request.cookies.get('trace_id')
