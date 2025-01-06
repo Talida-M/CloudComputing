@@ -6,10 +6,11 @@
     <title>Order Details</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body {
+           body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f0f8ff;
+            background-color: #f4f8fb;
+            color: #333;
         }
 
         h1 {
@@ -34,6 +35,11 @@
             transition: color 0.3s;
         }
 
+         .navbar .menu div{
+            padding-right: 10px;
+              font-size: 20px;
+            color: white;
+        }
         .navbar a:hover {
             color: #d1ecf9;
         }
@@ -127,6 +133,7 @@
 </head>
 <body>
  <div class="navbar">
+      <div id="appname">TAMBook Library</div>
         <div class="menu">
             <a href="/m">Books</a>
             <a href="/search-book">Search book</a>
@@ -149,7 +156,8 @@
     <ul class="order-books">
         {% for book in order.order_orderdetails %}
         <li class="book-item" data-idbook="{{ book.idbook }}" data-idorder="{{ order.idorder }}">
-            <p>{{ book.idbook }} ({{ book.price }})</p>
+            <p>{{ book.idbook }} </p>
+            <p>Price: ${{ book.price }} </p>
             <p>Quantity: {{ book.cantity }}</p>
 
             <!-- Buttons for adding/removing/updating the order -->
