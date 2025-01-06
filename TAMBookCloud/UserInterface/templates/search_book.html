@@ -7,21 +7,103 @@
     <title>Search Book</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
-        body {
+         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-        }
-        h1,h3 {
-            text-align: center;
+            background-color: #f4f8fb;
             color: #333;
         }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: #007acc;
+        }
+
         form {
             text-align: center;
-            margin-bottom: 20px;
+            margin: 20px auto;
         }
+
+        input[type="text"], input[type="number"], textarea {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(100% - 40px);
+            max-width: 400px;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+            border-color: #007acc;
+            box-shadow: 0 0 5px rgba(0, 122, 204, 0.5);
+        }
+
+        button {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #005f99;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #007acc;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+       .navbar .menu div{
+            padding-right: 10px;
+              font-size: 20px;
+            color: white;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #d1ecf9;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 15px;
+        }
+
+        .book-details, .error-message {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+
         #dropdown {
             border: 1px solid #ccc;
-            max-width: 300px;
+            max-width: 400px;
             margin: 0 auto;
             display: none;
             background-color: #fff;
@@ -29,31 +111,24 @@
             overflow-y: auto;
             position: relative;
             z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
+
         #dropdown div {
             padding: 10px;
             cursor: pointer;
             border-bottom: 1px solid #ddd;
         }
+
         #dropdown div:hover {
             background-color: #f0f0f0;
         }
-        .book-details, .error-message {
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-        }
-         .reviews-section {
+
+        .reviews-section {
             max-width: 800px;
             margin: 20px auto;
         }
+
         .review-card {
             background-color: #f9f9f9;
             border-radius: 8px;
@@ -61,19 +136,23 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .review-card h4 {
             margin: 0;
             font-size: 18px;
             color: #333;
         }
+
         .review-card p {
             margin-top: 10px;
             color: #666;
         }
+
         .review-card .rating {
             font-weight: bold;
-            color: #f39c12; /* Gold color for rating */
+            color: #f39c12;
         }
+
         .review-card .date {
             font-size: 14px;
             color: #aaa;
@@ -81,6 +160,16 @@
     </style>
 </head>
 <body>
+ <div class="navbar">
+      <div id="appname">TAMBook Library</div>
+        <div class="menu">
+            <a href="/m">Books</a>
+            <a href="/search-book">Search book</a>
+            <a href="/allorders">Your orders</a>
+             <a href="/order">Cart</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
     <h1>Search for a Book</h1>
     <form method="POST">
         <div>
