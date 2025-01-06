@@ -53,9 +53,81 @@
             color: #007BFF;
             margin-top: 10px;
         }
+
+
+     .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #007acc; /* Deep blue */
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #d1ecf9; /* Light blue hover */
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 15px;
+        }
+
+        .navbar .menu a {
+            font-weight: bold;
+        }
+
+        .navbar .search-bar {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .search-bar input[type="text"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .navbar .search-bar input[type="text"]:focus {
+            border-color: #005f99;
+            box-shadow: 0 0 5px rgba(0, 122, 204, 0.5);
+        }
+
+        .navbar .search-bar button {
+            background-color: #005f99;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .search-bar button:hover {
+            background-color: #003f73;
+        }
     </style>
 </head>
 <body>
+ <div class="navbar">
+        <div class="menu">
+            <a href="/m">Books</a>
+            <a href="/search-book">Search book</a>
+            <a href="/allorders">Your orders</a>
+             <a href="/order">Cart</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
     <h1>Books List</h1>
     <div class="book-list">
         {% for book in books %}
