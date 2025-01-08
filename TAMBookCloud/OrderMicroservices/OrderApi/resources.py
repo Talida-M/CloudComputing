@@ -111,14 +111,14 @@ class OrderCreateGetAPI(Resource):
 #         return [order.to_dict() for order in orders], 200
 
 class OrderAddingBookOrderAPI(Resource):
-    def post(self,bookid,orderid,price):
+    def post(self,bookid,orderid,price,name):
         # data = request.get_json()
         # bookid = data['idbook']
         # orderid = data['idorder']
         # price = data['price']
         start_time = time.time()
-        endpoint = f'/api/order/add/{bookid}/{orderid}/{str(price)}'
-        order = Order.add_book_to_order(bookid,orderid,price)
+        endpoint = f'/api/order/add/{bookid}/{orderid}/{str(price)}/{name}'
+        order = Order.add_book_to_order(bookid,orderid,price,name)
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')

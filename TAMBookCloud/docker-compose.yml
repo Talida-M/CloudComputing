@@ -149,14 +149,14 @@ services:
       DB_PASSWORD: my-secret-pw
 #      REDIS_HOST: redis
 #      REDIS_DATABASE: "0"
-      RABBITMQ_HOST: rabbitmq
+#      RABBITMQ_HOST: rabbitmq
       SYSLOG_HOST: syslog-ng
 #      PYTHONUNBUFFERED: 1
     depends_on:
       - bookdb
 #      - redis
       - syslog-ng
-      - rabbitmq
+#      - rabbitmq
       - prometheus
     restart: always
 

@@ -34,7 +34,7 @@ with app.app_context():
 
 api.add_resource(OrderCreateGetAPI, '/api/order/<string:iduser>')
 api.add_resource(SendOrderGetAPI, '/api/order/send/<string:iduser>')
-api.add_resource(OrderAddingBookOrderAPI, '/api/order/add/<string:bookid>/<string:orderid>/<float:price>')
+api.add_resource(OrderAddingBookOrderAPI, '/api/order/add/<string:bookid>/<string:orderid>/<float:price>/<string:name>')#moooooooooooooodiffff
 api.add_resource(OrderDecrementBookOrderAPI, '/api/order/decrem/<string:bookid>/<string:orderid>')
 api.add_resource(OrderRemoveBookOrderAPI, '/api/order/remove/<string:idbook>/<string:idorder>')
 api.add_resource(PendingOrderAPI,'/api/order/pending/<string:iduser>')

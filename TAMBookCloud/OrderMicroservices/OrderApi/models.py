@@ -93,7 +93,7 @@ class Order(db.Model):
         return order.to_dict()
 
     @classmethod
-    def add_book_to_order(cls,book_id, order_id, book_price):
+    def add_book_to_order(cls,book_id, order_id, book_price, name):
         try:
             #Find the order by ID
             order = Order.query.filter_by(idorder=order_id).first()
@@ -101,7 +101,7 @@ class Order(db.Model):
             raise ValueError("Does not exist an order with this id")
 
         # Add the book to the order and get the book price
-        book_price_in_order = Order_Detail.add_book_to_order_details(book_id,order_id,book_price)
+        book_price_in_order = Order_Detail.add_book_to_order_details(book_id,order_id,book_price,name)
 
         # Update the order's total price
         order.totalprice += book_price_in_order
@@ -196,16 +196,18 @@ class Order_Detail(db.Model):
     idbook = db.Column(db.String,  nullable=False)
     cantity =  db.Column(db.Integer, nullable = False)
     price = db.Column(db.Float, nullable=False)
+    name = db.Column(db.String, nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('idorder', 'idbook'),
     )
 
-    def __init__(self, idorder, idbook, cantity, price):
+    def __init__(self, idorder, idbook, cantity, price, name):
         self.idorder = idorder
         self.idbook = idbook
         self.cantity = cantity
         self.price = price
+        self.name = name
 
     def to_dict(self):
         return {
@@ -213,10 +215,11 @@ class Order_Detail(db.Model):
             'idbook': self.idbook,
             'cantity': self.cantity,
             'price': self.price,
+            'name': self.name
         }
 
     @classmethod
-    def add_book_to_order_details(cls,book_id, order_id,book_price):
+    def add_book_to_order_details(cls,book_id, order_id,book_price, name):
 
         # Verify if book is in the order
         book_order = Order_Detail.query.filter_by(idbook=book_id,idorder=order_id).first()
@@ -227,7 +230,8 @@ class Order_Detail(db.Model):
                 cantity=1,
                 price=book_price,
                 idbook=book_id,
-                idorder=order_id
+                idorder=order_id,
+                name = name
             )
             db.session.add(book_order)
         else:

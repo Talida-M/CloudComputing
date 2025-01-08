@@ -1,4 +1,4 @@
-from consumer import start_service
+# from consumer import start_service
 from forms import AuthorAddForm, AuthorViewForm, AuthorDeleteForm,AuthorViewAllForm,BookViewAllForm,BookAddForm,BookViewForm,BookUpdateForm,BookDeleteForm
 from flask import Flask, render_template, redirect, url_for
 from flask_restful import Api

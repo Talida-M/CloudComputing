@@ -142,10 +142,10 @@ def home():
             try:
                 # Try to parse JSON response
                 data = response1.json()
-                if 'idorder' in data:
-                    flash(data['idorder'], "success")
-                else:
-                    flash('No idorder found in response.', "error")
+                # if 'idorder' in data:
+                #     flash(data['idorder'], "success")
+                # else:
+                #     flash('No idorder found in response.', "error")
             except ValueError as e:
                 # Handle JSON parsing error
                 flash('Failed to parse JSON response from Order Microservice.', "error")
@@ -268,8 +268,9 @@ def add_to_order():
     idbook = data.get('idbook')
     idorder = data.get('idorder')
     price = data.get('price')
+    name = data.get('name')
 
-    if not all([idbook, idorder, price]):
+    if not all([idbook, idorder, price, name]):
         return jsonify({'error': 'Missing required parameters'}), 400
 
     # Forward the request to the OrderMicroservice
@@ -277,7 +278,7 @@ def add_to_order():
         trace_id = request.cookies.get('trace_id')
         headers = {'X-Trace-ID': trace_id, 'Id-User': iduser}
         response = requests.post(
-            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}'
+            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}/{name}'
         )
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
@@ -322,6 +323,7 @@ def add_book_to_order():
     idbook = data.get('idbook')
     idorder = data.get('idorder')
     price = data.get('price')
+    name = data.get('name')
 
     # if response.status_code == 200:
     #     flash("Book added to order successfully.", "success")
@@ -332,7 +334,7 @@ def add_book_to_order():
         trace_id = request.cookies.get('trace_id')
         headers = {'X-Trace-ID': trace_id, 'Id-User': iduser}
         response = requests.post(
-            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}',data = None, headers = headers
+            f'{orderApiMicroservUrl}/api/order/add/{idbook}/{idorder}/{price}/{name}',data = None, headers = headers
         )
         response.raise_for_status()
     except requests.exceptions.RequestException as e:

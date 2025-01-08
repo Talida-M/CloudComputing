@@ -190,7 +190,7 @@
 
             function fetchBooks() {
               $.ajax({
-                url: '/books',  // This assumes the books endpoint provides the data in the correct format
+                url: '/books',
                 method: 'GET',
                 success: function(data) {
                   booksCache = data;
@@ -237,7 +237,9 @@
             });
 
             $('#add-to-order-btn').on('click', function(event) {
-            event.preventDefault(); // Prevent default button action
+            event.preventDefault();
+            const name = $(this).data('name');
+            console.log(name)
             const idbook = $(this).data('idbook');
             console.log(idbook)
             const idorder = $(this).data('idorder');
@@ -248,7 +250,7 @@
             console.log(trace_id)
             const iduser = $(this).data('iduser');
             console.log(iduser)
-            // Send a POST request to /add-to-order
+            // Send POST request to /add-to-order
             fetch('/add-to-order', {
                 method: 'POST',
                 headers: {
@@ -256,7 +258,7 @@
                     'X-Trace-ID': trace_id || 'N/A',
                     'Id-User': iduser,
                 },
-                body: JSON.stringify({ idbook, idorder, price }),
+                body: JSON.stringify({ idbook, idorder, price, name }),
             })
             .then(response => {
                 if (!response.ok) {
@@ -294,7 +296,8 @@
         <button class="btn btn-primary" id="add-to-order-btn"
         data-idbook="{{ book_details.idbook }}"
         data-idorder="{{ idorder }}"
-        data-price="{{ book_details.price }}">
+        data-price="{{ book_details.price }}"
+        data-name="{{ book_details.name }}">
         <i class="fas fa-plus"></i> ORDER
         </button>
     </div>
