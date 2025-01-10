@@ -5,6 +5,7 @@ from models import Author,Book
 from prometheus_client import Counter, Histogram
 import time
 from datetime import datetime
+import json
 
 import logging
 from logging.handlers import SysLogHandler
@@ -189,7 +190,7 @@ class BooksAPI(Resource):
                 "date": datetime.today().date().isoformat(),
                 "user-id":user_id,
                 "trace_id": trace_id,
-                "message": f"Successfully fetched {len(books)} books"
+                "message": f"{REQUEST_LATENCY} nbb {REQUEST_COUNT} Successfully fetched {len(books)} books"
             })
         else:
             logger.info({

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, jsonify, session, redirect, url_for, request, render_template, flash,make_response
 import requests
 import jwt
@@ -6,6 +8,18 @@ bookMicroservUrl = 'http://book-microservices:8000'  # Added http:// to the URL
 reviewMicroservUrl = 'http://review-microservices:8000'
 userMicroservUrl = 'http://user-microservices:8000'
 orderApiMicroservUrl = 'http://order-microservice-api:8000'
+import logging
+from logging.handlers import SysLogHandler
+syslog_host = 'syslog-ng'
+syslog_port = 514
+logger = logging.getLogger('book_microservice')
+logger.setLevel(logging.INFO)
+
+
+syslog_handler = SysLogHandler(address=(syslog_host, syslog_port))
+formatter = logging.Formatter('%(asctime)s %(name)s [%(levelname)s]: %(message)s')
+syslog_handler.setFormatter(formatter)
+logger.addHandler(syslog_handler)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "SECRET_KEY"
@@ -203,6 +217,12 @@ def search_book():
 
                 return render_template('search_book.html', book_details=book_details,book_name=book_name,reviews=reviews,idorder=idorder,iduser=iduser,trace_id=trace_id)
             else:
+                logger.error({
+                    "date": datetime.today().date().isoformat(),
+                    "user-id": iduser,
+                    "trace_id": trace_id,
+                    "message": f"book not found {book_name}"
+                })
                 return render_template('register.html')
                 # return render_template('search_book.html', error="Book not found.",book_name=book_name)
         except requests.exceptions.RequestException as e:
