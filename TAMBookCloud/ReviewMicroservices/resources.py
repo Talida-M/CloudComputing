@@ -1,4 +1,6 @@
 from datetime import datetime
+
+import pytz
 from flask import request
 from flask_restful import Resource, reqparse
 import os
@@ -51,16 +53,19 @@ class ReviewAPI(Resource):
 
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
+
         if reviews:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id":user_id,
                 "trace_id": trace_id,
                 "message": f"Successfully fetched {len(reviews)} reviews"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": "No reviews available"
@@ -103,16 +108,18 @@ class ReviewsAPI(Resource):
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
         trace_id = data['trace_id']
         user_id = data['iduser']
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
         if review_done:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id":user_id,
                 "trace_id": trace_id,
                 "message": f"Successfully add the review for book {data['idbook']}"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": "No review was added"

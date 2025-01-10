@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pytz
 from flask import Flask, jsonify, session, redirect, url_for, request, render_template, flash,make_response
 import requests
 import jwt
@@ -195,8 +196,11 @@ def search_book():
                     reviews = review_response.json()
                 return render_template('search_book.html', book_details=book_details,book_name=book_name,reviews=reviews,idorder=idorder,iduser=iduser,trace_id=trace_id)
             else:
+                buc_tz = pytz.timezone('Europe/Bucharest')
+                current_time = datetime.now(buc_tz)
+
                 logger.error({
-                    "date": datetime.today().date().isoformat(),
+                    "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                     "user-id": iduser,
                     "trace_id": trace_id,
                     "message": f"book not found {book_name}"
@@ -239,8 +243,11 @@ def submit_review():
             flash("Review submitted successfully!", "success")
             return redirect(url_for('search_book')) #pastrati asa
         else:
+            buc_tz = pytz.timezone('Europe/Bucharest')
+            current_time = datetime.now(buc_tz)
+
             logger.error({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": f"Failed to submit the review from {iduser} for book {idbook}"

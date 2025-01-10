@@ -1,3 +1,4 @@
+import pytz
 from flask_restful import Resource, reqparse
 from models import Author,Book
 from prometheus_client import Counter, Histogram
@@ -56,19 +57,20 @@ class AuthorsAPI(Resource):#by names
         start_time = time.time()
         endpoint = '/api/author/'
         authors = Author.get_all_authors()
-
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
 
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
         if authors:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-type": 'admin',
                 "trace_id": 'N/A',
                 "message": f"Successfully fetched {len(authors)} authors"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-type": 'admin',
                 "trace_id": 'N/A',
                 "message": "No authors available"
@@ -87,10 +89,11 @@ class AuthorsAPI(Resource):#by names
         author_done = Author.add_author(author)
 
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
-
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
         logger.info({
-                "date": datetime.today().date().isoformat(),
-                "user-type": 'admin',
+            "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
+            "user-type": 'admin',
                 "trace_id": 'N/A',
                 "message": f"Successfully created {author_done['idauthor']} author"
         })
@@ -104,17 +107,19 @@ class AuthorAPI(Resource):#by names
         authors = Author.get_author_by_name( lastname,firstname)
 
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
 
         if authors:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-type": 'admin',
                 "trace_id": 'N/A',
                 "message": f"Successfully fetched {len(authors)} authors"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-type": 'admin',
                 "trace_id": 'N/A',
                 "message": "No authors available"
@@ -136,9 +141,12 @@ class BookByiD(Resource):
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
+
         if book:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": f"Successfully find book with id {idbook}"
@@ -146,7 +154,7 @@ class BookByiD(Resource):
             REQUEST_LATENCY.labels('GET', endpoint, trace_id).observe(time.time() - start_time)
             return book, 200
         logger.info({
-            "date": datetime.today().date().isoformat(),
+            "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
             "user-id": user_id,
             "trace_id": trace_id,
             "message": "The book doesn't exist"
@@ -177,16 +185,18 @@ class BooksAPI(Resource):
 
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
         if books:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id":user_id,
                 "trace_id": trace_id,
                 "message": f"Successfully fetched {len(books)} books"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": "No books available"
@@ -203,9 +213,11 @@ class BooksAPI(Resource):
 
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
         if review:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": f"Successfully update {idbook} book"
@@ -236,10 +248,12 @@ class BooksAPI(Resource):
 
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
 
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
 
         if book_done:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-type": 'admin',
                 "trace_id": 'N/A',
                 "message": f"Successfully created '{book_done['idbook']}' book"

@@ -1,5 +1,7 @@
 import uuid
 from datetime import datetime
+
+import pytz
 from flask import request
 from flask_restful import Resource, reqparse
 import os
@@ -55,16 +57,18 @@ class OrderCreateGetAPI(Resource):
         order = Order.get_or_create_order(iduser)
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
         if order:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": "Order created or displayed successfully"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": "No order available"
@@ -84,16 +88,19 @@ class OrderAddingBookOrderAPI(Resource):
         REQUEST_COUNT.labels('POST', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
+
         if order:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": f"Book {bookid} successfully added in order {orderid}"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": "No book added to order"
@@ -113,16 +120,18 @@ class OrderDecrementBookOrderAPI(Resource):
         REQUEST_COUNT.labels('DELETE', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
         if order:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": f"Pieces of book {bookid} successfully decremented from order {orderid}"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": "The book cantity was not decremented"
@@ -138,16 +147,19 @@ class OrderRemoveBookOrderAPI(Resource):
         REQUEST_COUNT.labels('DELETE', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
         user_id = request.headers.get('Id-User', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
+
         if order:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": f"Book {idbook} removed successfully from order {idorder}"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": "No book removed"
@@ -163,16 +175,19 @@ class SendOrderGetAPI(Resource):
         order = Order.sent_order(iduser)
         REQUEST_COUNT.labels('PUT', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
+
         if order:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": "Order successfully sent"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": "No order sent"
@@ -188,16 +203,19 @@ class PendingOrderAPI(Resource):
         order = Order.pending_order(iduser)
         REQUEST_COUNT.labels('PUT', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
+
         if order:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": "Order status successfully updated to pending"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": "No order status was update to pending"
@@ -213,16 +231,19 @@ class OrdersGetAllAPI(Resource):
         orders = Order.get_all_order(iduser)
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
         trace_id = request.headers.get('X-Trace-ID', 'N/A')
+        buc_tz = pytz.timezone('Europe/Bucharest')
+        current_time = datetime.now(buc_tz)
+
         if orders:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": f"Orders retrieved successfully"
             })
         else:
             logger.info({
-                "date": datetime.today().date().isoformat(),
+                "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": iduser,
                 "trace_id": trace_id,
                 "message": "No order retrieved"
