@@ -253,6 +253,7 @@ def submit_review():
                 "message": f"Failed to submit the review from {iduser} for book {idbook}"
             })
             flash("Failed to submit the review.", "error")
+            return redirect(url_for('search_book'))
 
     except requests.exceptions.RequestException as e:
         flash("Caution.", "error")

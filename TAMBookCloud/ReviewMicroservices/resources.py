@@ -105,24 +105,27 @@ class ReviewsAPI(Resource):
             'comment': data['comment']
         }
         review_done = Review.create_review(review)
-        REQUEST_COUNT.labels('POST', endpoint, 200).inc()
         trace_id = data['trace_id']
         user_id = data['iduser']
         buc_tz = pytz.timezone('Europe/Bucharest')
         current_time = datetime.now(buc_tz)
         if review_done:
+            REQUEST_COUNT.labels('POST', endpoint, 200).inc()
             logger.info({
                 "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id":user_id,
                 "trace_id": trace_id,
                 "message": f"Successfully add the review for book {data['idbook']}"
             })
+            REQUEST_LATENCY.labels('POST', endpoint, trace_id).observe(time.time() - start_time)
+            return review_done, 200
         else:
+            REQUEST_COUNT.labels('POST', endpoint, 400).inc()
             logger.info({
                 "date": current_time.strftime("%d-%m-%Y %H:%M:%S"),
                 "user-id": user_id,
                 "trace_id": trace_id,
                 "message": "No review was added"
             })
-        REQUEST_LATENCY.labels('POST', endpoint,trace_id).observe(time.time() - start_time)
-        return review_done, 200
+            REQUEST_LATENCY.labels('POST', endpoint,trace_id).observe(time.time() - start_time)
+            return review_done, 400

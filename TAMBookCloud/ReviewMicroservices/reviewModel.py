@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 
 db = SQLAlchemy()
 
@@ -33,15 +34,31 @@ class Review(db.Model):
 
     @classmethod
     def create_review(cls, review_data):
+        existing_review = cls.query.filter_by(
+            reviewdate=datetime.today().date(),
+            iduser=review_data['iduser'],
+            idbook=review_data['idbook']
+        ).first()
+
+        if existing_review:
+            return None
+
         review=Review(reviewdate= datetime.today().date(),
         iduser= review_data['iduser'],
         idbook= review_data['idbook'],
         rating= review_data['rating'],
         comment= review_data['comment']
         )
-        db.session.add(review)
-        db.session.commit()
-        return review.to_dict()
+        try:
+            db.session.add(review)
+            db.session.commit()
+            return review.to_dict()
+        except IntegrityError:
+            db.session.rollback()
+            return None
+        # db.session.add(review)
+        # db.session.commit()
+        # return review.to_dict()
 
     @classmethod
     def get_reviews_for_book(cls, idbook):
