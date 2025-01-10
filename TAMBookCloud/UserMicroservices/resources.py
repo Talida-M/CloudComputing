@@ -95,18 +95,12 @@ class UserLogin(Resource):
         if not current_user:
             return {'message': 'User doesn\'t exist'}
 
-        # user exists, comparing password and hash
         if bcrypt.generate_password_hash(data['password'], current_user.password):
 
-            #generating access token and refresh token
             additional_claims = {
                     "iduser": data['iduser']
                 }
-            #
-            # Create token with additional claims
             access_token = create_access_token(identity=email, additional_claims=additional_claims)
-            #access_token = create_access_token(identity=email)
-            #refresh_token = create_refresh_token(identity=email)
 
             return {
 
@@ -114,7 +108,6 @@ class UserLogin(Resource):
 
                 'access_token': access_token,
 
-                # 'refresh_token': refresh_token
             }
 
         else:

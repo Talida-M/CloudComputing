@@ -58,39 +58,3 @@ class User(db.Model):
             return 0 #the login is successfull
         else:
             return 1
-
-    # @classmethod
-    # def register(cls, user_data):
-    #     bytes_password =  user_data['password'].encode('utf-8')
-    #     salt = bcrypt.gensalt()
-    #     hash = bcrypt.hashpw(bytes_password, salt)
-    #     user = {
-    #             'iduser': uuid.uuid4(),
-    #             'email': user_data['email'],
-    #             'password': hash,
-    #             'name': user_data['name']
-    #     }
-# def send_message_to_queue(user_data):
-#     channel = connect_rabbitmq()
-#     send_message(channel, 'user_queue', user_data)
-#     channel.close()
-#
-# class RevokedTokenModel(db.Model):
-#     __tablename__ = 'revoked_tokens'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#
-#     jti = db.Column(db.String(120))
-#
-#     def add(self):
-#
-#         db.session.add(self)
-#
-#         db.session.commit()
-#
-#     @classmethod
-#     def is_jti_blacklisted(cls, jti):
-#
-#         query = cls.query.filter_by(jti=jti).first()
-#
-#         return bool(query)

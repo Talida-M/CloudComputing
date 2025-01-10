@@ -179,6 +179,8 @@
             <div id="dropdown" style="border: 1px solid #ccc; display: none; max-height: 200px; overflow-y: auto;"></div>
             <button type="submit">Search</button>
         </div>
+        <input type="hidden" id="iduser" value="{{ iduser }}">
+        <input type="hidden" id="trace_id" value="{{ trace_id }}">
     </form>
 
     <script>
@@ -297,7 +299,9 @@
         data-idbook="{{ book_details.idbook }}"
         data-idorder="{{ idorder }}"
         data-price="{{ book_details.price }}"
-        data-name="{{ book_details.name }}">
+        data-name="{{ book_details.name }}"
+        data-trace_id="{{ trace_id }}"
+        data-iduser="{{ iduser }}">
         <i class="fas fa-plus"></i> ORDER
         </button>
     </div>

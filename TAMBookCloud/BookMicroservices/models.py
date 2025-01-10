@@ -115,23 +115,6 @@ class Book(db.Model):
 
         }
 
-#exemplu de adaugare carte cu author FK
-    # new_author = Author(name="J.K. Rowling", biography="Author of the Harry Potter series.")
-    # db.session.add(new_author)
-    # db.session.commit()
-    # new_book = Book(
-    #     idBook=1,
-    #     name="Harry Potter and the Sorcerer's Stone",
-    #     price=19.99,
-    #     stockStatus=10,
-    #     year="1997",
-    #     description="Fantasy novel.",
-    #     publisher="Bloomsbury",
-    #     category="Fantasy",
-    #     idauthor=new_author.idauthor  # Bind to the author's id
-    # )
-    # db.session.add(new_book)
-    # db.session.commit()
     @classmethod
     def add_book(cls, book_data):
         book = Book(idbook=uuid.uuid4(),
@@ -163,9 +146,6 @@ class Book(db.Model):
         books = Book.query.filter_by(name=name).all()
         if books is not None:
             return books
-        # book = Book.query.filter_by(name=name).first()
-        # return book.to_dict() if book else None
-
 
     @classmethod
     def update_book_stock(cls, idbook, stockstatus):
@@ -181,8 +161,6 @@ class Book(db.Model):
 
     @classmethod
     def delete_book_by_id(cls, idbook):
-
-        # Query the database
         book = Book.query.filter_by(idbook=idbook).first()
 
         if book is None:

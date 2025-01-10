@@ -36,8 +36,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg://{DB_USERNAME}:{DB
 app.config['SECRET_KEY'] = "SECRET_KEY"
 
 app.config['JWT_SECRET_KEY'] = '12345678910' #this one is used for token creation
-# app.config['JWT_BLACKLIST_ENABLED'] = True
-# app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=2)
 
 db.init_app(app)
@@ -81,7 +79,6 @@ def login_route():
             return response
         else:
             return {'message': 'User doesn\'t exist'}
-    # jager.context.stop()
     return render_template('login.html',form=form)
 
 if __name__ == '__main__':

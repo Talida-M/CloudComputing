@@ -8,7 +8,7 @@ from reviewModel import db, Review
 from prometheus_client import make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-# from rabbitmq import send_message_with_response
+
 import pika
 import json
 DB_HOST = os.getenv('DB_HOST', 'reviewdb')
@@ -46,43 +46,8 @@ def add_review_route():
             'rating': form.rating.data,
             'comment': form.comment.data,
         }
-        # book_id = str(form.idbook.data)
-        # response = send_message_with_response(
-        #     'check_book_existence',
-        #     {'bookId': book_id}
-        # )
-        #
-        # if response.get('exists'):
-            # Add review if the book exists
         Review.create_review(review)
-        #     flash("Review added successfully!", "success")
-        #     return redirect(url_for('index'))
-        # else:
-        #     flash("Book does not exist. Cannot add review.", "error")
-
-        # book_exists = send_message_to_queue({'idbook':form.idbook.data})  # Send to RabbitMQ
-        #
-        # if book_exists:
-        #     # Logic for creating the review (e.g., saving it to the database)
-        #     flash("Review successfully added!", "success")
-        #     Review.create_review(review)
-        #     return redirect(url_for('index'))
-        # else:
-        #     flash("Error: The book does not exist.", 'error')
-
-        # if wait_for_book_response(form.idbook.data):
-        #     review = Review.create_review(review)
-        #     return redirect(url_for('index'))
-        # else:
-        #     flash("Error: The book does not exist. Review cannot be created.", 'error')
     return render_template('add_review.html', form=form)
-
-# def send_message_to_queue(bookid_data):
-#     channel = connect_rabbitmq()
-#     send_message(channel, 'book_queue', bookid_data)
-#     # channel.close()
-
-
 
 @app.route('/review/view', methods=['GET', 'POST'])
 def view_review_route():

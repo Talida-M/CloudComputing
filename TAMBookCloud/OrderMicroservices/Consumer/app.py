@@ -18,7 +18,6 @@ formatter = logging.Formatter('%(asctime)s %(name)s [%(levelname)s]: %(message)s
 syslog_handler.setFormatter(formatter)
 logger.addHandler(syslog_handler)
 
-# Environment variables for RabbitMQ and PostgreSQL connection
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_NAME = os.getenv('DB_NAME', 'db')
@@ -35,17 +34,6 @@ def get_postgres_connection():
     )
     return conn
 
-# Function to check if a book exists by ISBN
-# def book_exists(isbn):
-#     conn = get_postgres_connection()
-#     try:
-#         with conn.cursor() as cursor:
-#             cursor.execute("SELECT 1 FROM books WHERE isbn = %s", (isbn,))
-#             return cursor.fetchone() is not None
-#     finally:
-#         conn.close()
-
-# Function to add a book to the database
 def update_order_status(order_data):
     conn = get_postgres_connection()
     try:
@@ -70,23 +58,22 @@ def update_order_status(order_data):
                 "date": datetime.today().date().isoformat(),
                 "user-type": 'admin',
                 "trace_id": 'N/A',
-                "message": f"pentru {order_data['idorder']} status actualizat la {updated_status}"
+                "message": f"for order {order_data['idorder']} status updated to {updated_status}"
             })
     finally:
         conn.close()
 #"UPDATE orders SET status = 'success' WHERE orders.idorder = order_data['idorder']"
-# Callback function that will be triggered when a message is received from RabbitMQ
 def callback(ch, method, properties, body):
-    print("Received the new order message")
+    print(f"Received the new order message")
     order_data = json.loads(body)
+    print(f"the order is received with status {order_data['status']} for order {order_data['idorder']}")
     logger.info({
         "date": datetime.today().date().isoformat(),
         "user-type": 'admin',
         "trace_id": 'N/A',
-        "message": f"initial rabbitmq a primt statuuus {order_data['status']} pentru {order_data['idorder']}"
+        "message": f"the order is received with status {order_data['status']} for {order_data['idorder']}"
     })
     update_order_status(order_data)
-
     # Acknowledge the message to RabbitMQ (message has been processed)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 

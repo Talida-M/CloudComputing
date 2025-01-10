@@ -1,7 +1,5 @@
 from flask_restful import Resource, reqparse
 from models import Author,Book
-# from authorModel import Author
-# from bookModel import Book
 from prometheus_client import Counter, Histogram
 import time
 from datetime import datetime
@@ -107,8 +105,6 @@ class AuthorAPI(Resource):#by names
 
         REQUEST_COUNT.labels('GET', endpoint, 200).inc()
 
-        # trace_id = request.headers.get('X-Trace-ID', 'N/A')
-        # user_id = request.headers.get('Id-User', 'N/A')
         if authors:
             logger.info({
                 "date": datetime.today().date().isoformat(),
@@ -131,10 +127,6 @@ class BookAPI(Resource):#by names
     def get(self,name):
         books = Book.get_book_by_name(name)
         return [book.to_dict() for book in books], 200
-        # book = Book.get_book_by_name(name)
-        # if book:
-        #     return book, 200
-        # return {'message': 'Book not found'}, 404
 
 class BookByiD(Resource):
     def get(self,idbook):
@@ -190,7 +182,7 @@ class BooksAPI(Resource):
                 "date": datetime.today().date().isoformat(),
                 "user-id":user_id,
                 "trace_id": trace_id,
-                "message": f"{REQUEST_LATENCY} nbb {REQUEST_COUNT} Successfully fetched {len(books)} books"
+                "message": f"Successfully fetched {len(books)} books"
             })
         else:
             logger.info({

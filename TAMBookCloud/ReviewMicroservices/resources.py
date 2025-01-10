@@ -119,16 +119,3 @@ class ReviewsAPI(Resource):
             })
         REQUEST_LATENCY.labels('POST', endpoint,trace_id).observe(time.time() - start_time)
         return review_done, 200
-        # return {'bookid':review_done['idbook']}, 200
-    # def post(self):
-    #     args = parser.parse_args()
-    #     review = {
-    #         'reviewdate': datetime.today().date(),
-    #         'iduser': args['iduser'],
-    #         'idbook': args['idbook'],
-    #         'rating': args['rating'],
-    #         'comment': args['comment']
-    #     }
-    #     review_done = Review.create_review(review)
-    #     return review_done, 200
-    #     # return {'bookid':review_done['idbook']}, 200
