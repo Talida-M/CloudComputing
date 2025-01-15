@@ -1,0 +1,267 @@
+#docker-compose yml final
+version: '3.8'
+
+services:
+
+  syslog-ng:
+    image: balabit/syslog-ng:latest
+    container_name: syslog-ng
+    networks:
+      - network
+    ports:
+      - "514:514/udp"
+      - "514:514/tcp"
+    volumes:
+      - ./syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf
+      - ./logs:/var/log
+
+
+  postgres:
+    image: postgres
+    container_name: postgresTAM
+
+    networks:
+      - network
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      # - ./OrderMicroservices/data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == master-1  # Replace with your desired node hostname
+
+
+  userdb:
+    image: postgres
+    container_name: user_db_TAM
+    networks:
+      - network
+#    ports:
+#      - "5433:5432"
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      # - ./UserMicroservices/data:/var/lib/postgresql/data
+      - userdb-data:/var/lib/postgresql/data
+    deploy:
+        replicas: 1
+        placement:
+            constraints:
+            - node.hostname == master-1  # Replace with your desired node hostname
+
+  reviewdb:
+    image: postgres
+    container_name: review_db_TAM
+    networks:
+      - network
+#    ports:
+#      - "5434:5432"
+    environment:
+      POSTGRES_DB: reviewdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      # - ./ReviewMicroservices/data:/var/lib/postgresql/data
+      - reviewdb-data:/var/lib/postgresql/data
+    deploy:
+        replicas: 1
+        placement:
+            constraints:
+            - node.hostname == master-1  # Replace with your desired node hostname
+
+  bookdb:
+    image: postgres
+    container_name: book_db_TAM
+    networks:
+      - network
+    #    ports:
+    #      - "5435:5432"
+    environment:
+      POSTGRES_DB: bookdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my-secret-pw
+    volumes:
+      # - ./BookMicroservices/data:/var/lib/postgresql/data
+      - bookdb-data:/var/lib/postgresql/data
+    deploy:
+        replicas: 1
+        placement:
+            constraints:
+            - node.hostname == master-1  # Replace with your desired node hostname
+#  redis:
+#    image: redis
+#    container_name: redis
+#    networks:
+#      - network
+#    ports:
+#      - "6379:6379"
+#    command: --bind 0.0.0.0
+
+  rabbitmq:
+    image: rabbitmq
+    container_name: rabbitmqTAM
+    networks:
+      - network
+    ports:
+      - "5672:5672"
+
+  user-microservices:
+    image: mirunapami01/user-microservice:latest
+    container_name: tam-user-app
+    networks:
+      - network
+    ports:
+      - "5002:8000"
+    environment:
+      DB_HOST: userdb
+      DB_NAME: userdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+    depends_on:
+      - userdb #nume serviciu
+
+  review-microservices:
+    image: mirunapami01/review-microservice:latest
+    container_name: tam-review-app
+    networks:
+      - network
+    ports:
+      - "5003:8000"
+    environment:
+      DB_HOST: reviewdb
+      DB_NAME: reviewdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+#      REDIS_HOST: redis
+#      REDIS_DATABASE: "0"
+      RABBITMQ_HOST: rabbitmq
+      SYSLOG_HOST: syslog-ng
+    depends_on:
+      - reviewdb
+#      - postgres
+#      - redis
+      - rabbitmq
+      - syslog-ng
+      - prometheus
+
+  book-microservices:
+    image: mirunapami01/book-microservices:latest
+    container_name: tam-book-app
+    networks:
+      - network
+    ports:
+      - "5004:8000"
+    environment:
+
+      DB_HOST: bookdb
+      DB_NAME: bookdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+#      REDIS_HOST: redis
+#      REDIS_DATABASE: "0"
+      RABBITMQ_HOST: rabbitmq
+      SYSLOG_HOST: syslog-ng
+#      PYTHONUNBUFFERED: 1
+    depends_on:
+      - bookdb
+#      - redis
+      - syslog-ng
+      # - rabbitmq
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    #modificare noua
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+    networks:
+      - network
+    ports:
+      - 9090:9090
+    # volumes:
+    #   - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+
+  user-interface:
+    image: mirunapami01/userinterface-microservice:latest
+    container_name: tam-user-interface-app
+    networks:
+      - network
+    ports:
+      - "5005:8000"
+#    environment:
+#      DB_HOST: postgres
+#      DB_NAME: db
+#      DB_USERNAME: postgres
+#      DB_PASSWORD: my-secret-pw
+#    depends_on:
+#      - postgres
+
+  order-microservice-consumer:
+    image: mirunapami01/orderconsumer-microservice:latest
+    # container_name: tam-order-app-consumer
+    networks:
+      - network
+    environment:
+      DB_HOST: postgres
+      DB_NAME: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+      RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+    deploy:
+      mode: replicated
+      replicas: 5
+
+
+  order-microservice-api:
+    image: mirunapami01/orderapi-microservice:latest
+    container_name: tam-order-app-producer
+    networks:
+      - network
+    ports:
+      - "5006:8000"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: my-secret-pw
+#      REDIS_HOST: redis
+#      REDIS_DATABASE: "0"
+      RABBITMQ_HOST: rabbitmq
+      SYSLOG_HOST: syslog-ng
+    depends_on:
+      - postgres
+#      - redis
+      - rabbitmq
+      - syslog-ng
+      - prometheus
+
+
+
+
+networks:
+  network:
+    driver: overlay
+
+volumes:
+    postgres-data:
+    userdb-data:
+    reviewdb-data:
+    bookdb-data:
+configs:
+    prometheus_config:
+        file: ./prometheus.yml
