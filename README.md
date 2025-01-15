@@ -1,20 +1,42 @@
 # CloudComputing - TAM Book
 
-This application is designed to streamline the operations of an online bookstore. It simplifies the management of customers, books data and reviews and also facilitates placing orders.
+This application is designed to streamline the operations of an online bookstore. It simplifies the management of customers, books data and reviews and also facilitates placing orders. 
+It has:
+- 4 microservices with their own database 
+- docker-compose
+- docker-swarm with one manager node and one worker (2 virtual machines)
+- user interface that connects the url for interface with API from microservices
 
-### DB Diagram
+### DBs Diagrams for each microservice
 
-![Clouddiagramaconceptuala drawio](https://github.com/user-attachments/assets/8f786f92-d1f0-4629-83ed-742b1b874bdb)
+![Diagrame baze de date per microservicii](https://github.com/user-attachments/assets/66690a57-35fb-4c47-b697-9828e3432818)
 
-### Micro-services:
+### Microservices:
+![microservices](https://github.com/user-attachments/assets/4fa50d73-97b1-48e9-afb1-588c5921c803)
 
-1.	Auth Service – login & register
-2.	Book Service
-3.	Order Service (user orders, place new order, order status)
-4.	Payment Service 
-5.	Review & Ratings Service
-6.	Analytics Service – Prometheus
-7.	Notification Service
+1.	User Microservice – login & register
+2.	Book Microservice - book and author management
+3.	Order Microservice 
+
+  	a. OrderApi
+  	 
+- add books to order,
+- increase/decrease/remove book from order,
+- list all orders
+- sent order - with RabbitMQ (change the order status to success)
+  
+    b. Consumer
+  
+- where the status is changed with RabbitMQ help
+4.	Review Microservice - add review
+
+The application has a user interface: UserInterface 
+
+### Implemented bonuses
+
+The application has implemented 2 bonuses:
+1.	Metrics – Prometheus
+2.	Logging with syslog-ng
 
 
 ### Dev commands
