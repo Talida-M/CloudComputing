@@ -42,6 +42,8 @@ The application has implemented 2 bonuses:
 
 ![docker_compose_from_swarm](https://github.com/user-attachments/assets/381171c3-b2b8-41ab-9c98-ffd3ae876763)
 
+### Docker-compose file modified for docker-swarm
+[Docker-compose](https://github.com/Talida-M/CloudComputing/blob/68bb624e504ed54680f458d7bd98488944d13596/docker_compose_yml_from_Swarm.txt)
 
 ### Dev commands
 
