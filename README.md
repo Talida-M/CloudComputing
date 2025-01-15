@@ -38,6 +38,10 @@ The application has implemented 2 bonuses:
 1.	Metrics – Prometheus
 2.	Logging with syslog-ng
 
+### Example of microservices from docker-compose good in docker-swarm
+
+![docker_compose_from_swarm](https://github.com/user-attachments/assets/381171c3-b2b8-41ab-9c98-ffd3ae876763)
+
 
 ### Dev commands
 
